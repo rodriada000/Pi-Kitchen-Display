@@ -3,7 +3,7 @@ import pyowm
 from time import *
 from PyQt4 import QtCore, QtGui
 
-API_key = '373575716a2a4a494cf852827616ff19'
+API_key = 'YOUR API KEY'
 owm = pyowm.OWM(API_key)
 wIcons = {800:'sunny.png', 801:'partcloudy.png', 802:'cloudy.png', 803:'clouds.png', 804:'clouds.png', 701:'mist.png',
           500:'drizzle.png', 301:'drizzle.png', 501:'drizzle.png', 502:'rainy.png', 503:'rainy.png', 504:'rainy.png',
