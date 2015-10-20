@@ -67,7 +67,7 @@ class WeatherWidget(QtGui.QWidget):
         pic = QtGui.QLabel()
         pic.setScaledContents(True)
         pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code()))
-        pic.setPixmap(pixmap) #icon
+        pic.setPixmap(pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)) #icon
         pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
         temp = QtGui.QLabel()
@@ -105,8 +105,8 @@ class WeatherWidget(QtGui.QWidget):
             pic = QtGui.QLabel()
             pic.setScaledContents(True)
             pixmap = QtGui.QPixmap(self.getIcon(weather.get_weather_code()))
-            # scaledPix = pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)
-            pic.setPixmap(pixmap) #icon
+            scaledPix = pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)
+            pic.setPixmap(scaledPix) #icon
             pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             temp = QtGui.QLabel()
@@ -140,7 +140,7 @@ class WeatherWidget(QtGui.QWidget):
         det = self.grid.itemAtPosition(3,0).widget()
 
         pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
-        pic.setPixmap(pixmap) 
+        pic.setPixmap(pixmap)
 
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
         det.setText(w.get_detailed_status())
@@ -169,3 +169,20 @@ class WeatherWidget(QtGui.QWidget):
             det.setText(weather.get_detailed_status()) # details
 
             i = i + 1
+            
+    def bestFontSize(self, text, cellRect):
+        size = 1
+        ff = QtGui.QFont()
+        ff.setPointSize(size)
+        
+        qf = QtGui.QFontMetrics(ff)
+        
+        while (True):
+            textRect = qf.boundingRect(text)
+            if (textRect.width() > cellRect.width()):
+                break
+            size += 1
+            ff.setPointSize(size)
+            qf = QtGui.QFontMetrics(ff)
+            
+        return size
