@@ -93,7 +93,6 @@ class Ui_MainWindow(object):
 
         self.pushButton_internet = QtGui.QPushButton(self.centralwidget)
         self.pushButton_internet.setMinimumSize(QtCore.QSize(121, 51))
-        self.pushButton_internet.setMaximumSize(QtCore.QSize(121, 51))
         self.pushButton_internet.setObjectName(_fromUtf8("pushButton_internet"))
         self.gridLayout.addWidget(self.pushButton_internet, 2, 0, 1, 1)
         self.frame_2 = QtGui.QFrame(self.centralwidget)
@@ -124,7 +123,6 @@ class Ui_MainWindow(object):
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
         self.pushButton_mp.setMinimumSize(QtCore.QSize(121, 51))
-        self.pushButton_mp.setMaximumSize(QtCore.QSize(121, 51))
         self.pushButton_mp.setObjectName(_fromUtf8("pushButton_mp"))
         self.pushButton_mp.clicked.connect(self.mpClick)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
