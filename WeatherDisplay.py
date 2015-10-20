@@ -3,11 +3,11 @@ import pyowm
 from time import *
 from PyQt4 import QtCore, QtGui
 
-API_key = 'YOUR API KEY'
-owm = pyowm.OWM(API_key)
+API_key = ''
+owm = pyowm.OWM(None)
 wIcons = {800:'sunny.png', 801:'partcloudy.png', 802:'cloudy.png', 803:'clouds.png', 804:'clouds.png', 701:'mist.png',
           500:'drizzle.png', 301:'drizzle.png', 501:'drizzle.png', 502:'rainy.png', 503:'rainy.png', 504:'rainy.png',
-          600:'snowfall.png', 601:'snowfall.png', 602:'snowstorm.png',
+          600:'snowfall.png', 601:'snowfall.png', 602:'snowstorm.png', 741:'morningfog.png',
           200:'lightning.png', 201:'lightning.png', 202:'lightningstorms.png', 211:'lightningstorms.png', 212:'lightningstorms.png'}
 
 class WeatherWidget(QtGui.QWidget):
@@ -21,8 +21,26 @@ class WeatherWidget(QtGui.QWidget):
 
     def initUI(self):
 
-        self.grid = QtGui.QGridLayout(self)
-        self.observation = owm.weather_at_coords(46.73, -117.18)
+        # Load API key and location from weather.cfg file
+        userLocation = ''
+        with open('weather.cfg') as settings:
+            lines = [line.rstrip('\n') for line in settings]
+            API_key = lines[0] # API Key should be first line in weather.cfg
+            userLocation = lines[1] # Location should be second line
+
+        try:
+            owm = pyowm.OWM(API_key)
+        except:
+            print("Failed to get owm object with given API key: " + API_key)
+            return
+
+        try:
+            self.observation = owm.weather_at_place(userLocation)
+            if (self.observation == None):
+                raise Exception()
+        except:
+            print("Failed to get weather at given location: " + userLocation)
+            return
 
         #Initialize timers
         self.currentTimer = QtCore.QTimer()
@@ -34,6 +52,7 @@ class WeatherWidget(QtGui.QWidget):
         self.forecastTimer.start(3600000) # Update forecast every hour
 
         # Initialize current Temperatures
+        self.grid = QtGui.QGridLayout(self) # Gridlayout to contain all widgets
         w = self.observation.get_weather()
 
         date = QtGui.QLabel()
@@ -121,7 +140,7 @@ class WeatherWidget(QtGui.QWidget):
         det = self.grid.itemAtPosition(3,0).widget()
 
         pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
-        pic.setPixmap(pixmap) #icon
+        pic.setPixmap(pixmap) 
 
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
         det.setText(w.get_detailed_status())
