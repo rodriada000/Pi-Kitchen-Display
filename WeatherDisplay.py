@@ -45,7 +45,7 @@ class WeatherWidget(QtGui.QWidget):
         #Initialize timers
         self.currentTimer = QtCore.QTimer()
         self.currentTimer.timeout.connect(self.updateWeather)
-        self.currentTimer.start(900000) # Update current weather every 15 min
+        self.currentTimer.start(600000) # Update current weather every 10 min
 
         self.forecastTimer = QtCore.QTimer()
         self.forecastTimer.timeout.connect(self.updateForecast)
@@ -147,11 +147,14 @@ class WeatherWidget(QtGui.QWidget):
         pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
         pic.setPixmap(pixmap)
 
+        print("old temps currently " + temp.text() + ". About to update...")
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
+        print("current forecast updated with temps: " + str(w.get_temperature('fahrenheit')))
         det.setText(w.get_detailed_status())
     #def end
 
     def updateForecast(self): # Update the forecast (next 4 days of weather)
+        global owm
         forecast = owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
         f = forecast.get_forecast()
         wlist = f.get_weathers()
@@ -200,15 +203,15 @@ class WeatherWidget(QtGui.QWidget):
 
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
         font = QtGui.QFont()
-        maxDateSize = 18 # max font for displaying the dates
+        maxSize = 20 # max font for displaying the dates
         i = 0
         
         while i < 5:
             widg = self.grid.itemAtPosition(0, i).widget() # Resize dates
             rect = self.grid.cellRect(0, i)
             size = self.bestFontSize(widg.text(), rect)
-            if (size > maxDateSize):
-                size = maxDateSize
+            if (size > maxSize):
+                size = maxSize
             
             if (i == 0):
                 font.setBold(True) # have "Today" be bolded to stand out
@@ -221,13 +224,17 @@ class WeatherWidget(QtGui.QWidget):
             
             widg = self.grid.itemAtPosition(2, i).widget() # Resize temps
             rect = self.grid.cellRect(2, i)
-            size = self.bestFontSize(widg.text(), rect)
+            size = self.bestFontSize(widg.text(), rect) - 1
+            if (size > maxSize):
+                size = maxSize
             font.setPointSize(size)
             widg.setFont(font)
             
             widg = self.grid.itemAtPosition(3, i).widget() # Resize weather details
             rect = self.grid.cellRect(3, i)
-            size = self.bestFontSize(widg.text(), rect)
+            size = self.bestFontSize(widg.text(), rect) - 1
+            if (size > maxSize):
+                size = maxSize
             font.setPointSize(size)
             widg.setFont(font)
             

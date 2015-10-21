@@ -103,12 +103,12 @@ class Ui_MainWindow(object):
 
         # Calendar Widget
         self.calendarWidget_main = QtGui.QCalendarWidget(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.calendarWidget_main.sizePolicy().hasHeightForWidth())
         self.calendarWidget_main.setSizePolicy(sizePolicy)
-        self.calendarWidget_main.setMinimumSize(QtCore.QSize(217, 119))
+        # self.calendarWidget_main.setMinimumSize(QtCore.QSize(217, 119))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("FreeSans"))
         self.calendarWidget_main.setFont(font)
@@ -127,6 +127,7 @@ class Ui_MainWindow(object):
         self.pushButton_mp.clicked.connect(self.mpClick)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
+        self.musicOpened = False
 
         # Status Bar
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -135,9 +136,6 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-        # Initialize music player
-        self.musicOpened = False
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
@@ -153,8 +151,6 @@ class Ui_MainWindow(object):
         else: # Create music player if not opened yet
             self.musicPlayer = MusicPage(self.centralwidget, self.centralwidget.geometry())
             self.musicOpened = True
-
-        self.statusbar.showMessage('Music Player Opened.')
 
     def updateClock(self):
         self.label_clock.setText(strftime("%-I" + ":" + "%M"))
