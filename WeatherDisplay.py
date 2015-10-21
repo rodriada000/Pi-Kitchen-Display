@@ -181,7 +181,7 @@ class WeatherWidget(QtGui.QWidget):
             date = self.grid.itemAtPosition(0,i).widget()
             date.setText(t.split(" ")[0][5:]) # date
 
-            self.origIcons[i] = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
+            self.origIcons[i] = QtGui.QPixmap(self.getIcon(weather.get_weather_code())) # Update icon
             rect = self.grid.cellRect(1, i) # get bounds of grid cell
             if rect.width() < rect.height(): # use mininum of width or height for icon size
                 picSize = rect.width()
