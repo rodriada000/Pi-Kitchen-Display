@@ -52,7 +52,6 @@ class Ui_MainWindow(object):
         self.weather_hlay = QtGui.QHBoxLayout(self.frame_weather)
         self.weather_hlay.addWidget(WeatherWidget(self.frame_weather))
 
-
         self.frame = QtGui.QFrame(self.centralwidget)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -65,11 +64,11 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QtGui.QFrame.Plain)
         self.frame.setObjectName(_fromUtf8("frame"))
         self.gridLayout.addWidget(self.frame, 0, 2, 1, 1)
+
+        # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
         self.label_clock.setMinimumSize(QtCore.QSize(111, 41))
         self.label_clock.setMaximumSize(QtCore.QSize(211, 41))
-
-        # Setup Clock
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Droid Sans [monotype]"))
         font.setPointSize(28)
@@ -85,11 +84,10 @@ class Ui_MainWindow(object):
         self.label_clock.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_clock.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label_clock.setObjectName(_fromUtf8("label_clock"))
-        self.label_clock.setText(strftime("%-I" + ":" + "%M"))
+        self.gridLayout.addWidget(self.label_clock, 1, 2, 1, 1)
         self.clockTimer = QtCore.QTimer()
         self.clockTimer.timeout.connect(self.updateClock)
         self.clockTimer.start(1000)
-        self.gridLayout.addWidget(self.label_clock, 1, 2, 1, 1)
 
         self.pushButton_internet = QtGui.QPushButton(self.centralwidget)
         self.pushButton_internet.setMinimumSize(QtCore.QSize(121, 51))
@@ -103,7 +101,7 @@ class Ui_MainWindow(object):
 
         # Calendar Widget
         self.calendarWidget_main = QtGui.QCalendarWidget(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.calendarWidget_main.sizePolicy().hasHeightForWidth())

@@ -3,8 +3,6 @@ import pyowm
 from time import *
 from PyQt4 import QtCore, QtGui
 
-API_key = ''
-owm = pyowm.OWM(None)
 wIcons = {800:'sunny.png', 801:'partcloudy.png', 802:'cloudy.png', 803:'clouds.png', 804:'clouds.png', 701:'mist.png',
           500:'drizzle.png', 301:'drizzle.png', 501:'drizzle.png', 502:'rainy.png', 503:'rainy.png', 504:'rainy.png',
           600:'snowfall.png', 601:'snowfall.png', 602:'snowfall.png', 741:'morningfog.png',
@@ -17,30 +15,37 @@ class WeatherWidget(QtGui.QWidget):
             Initialize the browser GUI and connect the events
         """
         super(WeatherWidget, self).__init__(parent)
-        self.initUI()
-
-    def initUI(self):
 
         # Load API key and location from weather.cfg file
-        userLocation = ''
-        with open('weather.cfg') as settings:
-            lines = [line.rstrip('\n') for line in settings]
-            API_key = lines[0] # API Key should be first line in weather.cfg
-            userLocation = lines[1] # Location should be second line
-
+        self.API_key = None
+        self.userLocation = ''
         try:
-            owm = pyowm.OWM(API_key)
+            with open('weather.cfg') as settings:
+                lines = [line.rstrip('\n') for line in settings]
+                self.API_key = lines[0] # API Key should be first line in weather.cfg
+                self.userLocation = lines[1] # Location should be second line
         except:
-            print("Failed to get owm object with given API key: " + API_key)
+            print("Failed to open weather.cfg..")
+            return
+
+        self.owm = pyowm.OWM(None)
+        try:
+            self.owm = pyowm.OWM(self.API_key)
+        except:
+            print("Failed to get owm object with given API key: " + self.API_key)
             return
 
         try:
-            self.observation = owm.weather_at_place(userLocation)
+            self.observation = self.owm.weather_at_place(self.userLocation)
             if (self.observation == None):
                 raise Exception()
         except:
-            print("Failed to get weather at given location: " + userLocation)
+            print("Failed to get weather at given location: " + self.userLocation)
             return
+
+        self.initUI()
+
+    def initUI(self):
 
         #Initialize timers
         self.currentTimer = QtCore.QTimer()
@@ -91,11 +96,14 @@ class WeatherWidget(QtGui.QWidget):
         self.grid.addWidget(det, 3, 0)
 
         # Initialize next 4 days of weather
-        forecast = owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
+        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
         f = forecast.get_forecast()
         wlist = f.get_weathers()
 
         i = 1
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy.setWidthForHeight(True)
+        sizePolicy.setHeightForWidth(True)
         for weather in wlist[1:]:
             t = weather.get_reference_time('iso')
             w = weather.get_temperature('fahrenheit')
@@ -106,6 +114,7 @@ class WeatherWidget(QtGui.QWidget):
             date.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             pic = QtGui.QLabel()
+            pic.setSizePolicy(sizePolicy)
             pic.setScaledContents(True)
             pixmap = QtGui.QPixmap(self.getIcon(weather.get_weather_code()))
             scaledPix = pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)
@@ -147,15 +156,14 @@ class WeatherWidget(QtGui.QWidget):
         pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
         pic.setPixmap(pixmap)
 
-        print("old temps currently " + temp.text() + ". About to update...")
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
-        print("current forecast updated with temps: " + str(w.get_temperature('fahrenheit')))
         det.setText(w.get_detailed_status())
+
+        print("current forecast updated with temps: " + str(w.get_temperature('fahrenheit')))
     #def end
 
     def updateForecast(self): # Update the forecast (next 4 days of weather)
-        global owm
-        forecast = owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
+        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
         f = forecast.get_forecast()
         wlist = f.get_weathers()
 

@@ -10,6 +10,15 @@ class MusicPage(QtGui.QWidget):
         """
         super(MusicPage, self).__init__(parent)
 
+        # Load music server url from music.cfg
+        try:
+            with open('music.cfg') as settings:
+                lines = [line.rstrip('\n') for line in settings]
+                self.serverUrl = lines[0] # Server should be first line in file
+        except:
+            print("Failed to get music server url...")
+            return
+
         self.resize(size.width(), size.height())
         self.initUI(size)
 
@@ -28,10 +37,7 @@ class MusicPage(QtGui.QWidget):
         self.refreshBtn.setMinimumHeight(25)
         self.refreshBtn.clicked.connect(self.reloadPlayer)
 
-        try:
-            self.page.load(QtCore.QUrl("http://192.168.1.7:4200"))
-        except:
-            self.page.load(QtCore.QUrl("http://www.google.com"))
+        self.page.load(QtCore.QUrl(self.serverUrl))
 
         self.grid.addWidget(self.hideButton, 0, 0)
         self.grid.addWidget(self.refreshBtn, 0, 1)
@@ -44,4 +50,4 @@ class MusicPage(QtGui.QWidget):
         self.show()
 
     def reloadPlayer(self):
-        self.page.load(QtCore.QUrl("http://192.168.1.7:4200"))
+        self.page.load(QtCore.QUrl(self.serverUrl))
