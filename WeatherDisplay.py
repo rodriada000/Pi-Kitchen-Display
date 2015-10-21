@@ -16,6 +16,8 @@ class WeatherWidget(QtGui.QWidget):
         """
         super(WeatherWidget, self).__init__(parent)
 
+        self.origIcons = list() # contains original version of icon to do proper scaling
+
         # Load API key and location from weather.cfg file
         self.API_key = None
         self.userLocation = ''
@@ -30,7 +32,6 @@ class WeatherWidget(QtGui.QWidget):
             print("Failed to open weather.cfg..")
             return
 
-        self.owm = pyowm.OWM(None)
         try:
             self.owm = pyowm.OWM(self.API_key)
         except:
@@ -39,7 +40,7 @@ class WeatherWidget(QtGui.QWidget):
 
         try:
             self.observation = self.owm.weather_at_place(self.userLocation)
-            if (self.observation == None):
+            if (self.observation is None):
                 raise Exception()
         except:
             print("Failed to get weather at given location: " + self.userLocation)
@@ -65,7 +66,6 @@ class WeatherWidget(QtGui.QWidget):
         # Today date label
         date = QtGui.QLabel()
         date.setText("Today")
-        date.setScaledContents(True)
         ff = QtGui.QFont()
         ff.setPointSize(14)
         ff.setBold(True)
@@ -74,9 +74,8 @@ class WeatherWidget(QtGui.QWidget):
 
         # Today Icon label
         pic = QtGui.QLabel()
-        pic.setScaledContents(True)
-        pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code()))
-        pic.setPixmap(pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)) #icon
+        self.origIcons.append(QtGui.QPixmap(self.getIcon(w.get_weather_code())))
+        pic.setPixmap(self.origIcons[0].scaled(64, 64)) #icon
         pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
         # Today temps label
@@ -103,9 +102,6 @@ class WeatherWidget(QtGui.QWidget):
         wlist = f.get_weathers()
 
         i = 1
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
-        sizePolicy.setWidthForHeight(True)
-        sizePolicy.setHeightForWidth(True)
         for weather in wlist[1:]:
             t = weather.get_reference_time('iso')
             w = weather.get_temperature('fahrenheit')
@@ -116,10 +112,8 @@ class WeatherWidget(QtGui.QWidget):
             date.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             pic = QtGui.QLabel()
-            pic.setSizePolicy(sizePolicy)
-            pic.setScaledContents(True)
-            pixmap = QtGui.QPixmap(self.getIcon(weather.get_weather_code()))
-            scaledPix = pixmap.scaled(pixmap.width(), pixmap.height(), QtCore.Qt.KeepAspectRatio)
+            self.origIcons.append(QtGui.QPixmap(self.getIcon(weather.get_weather_code())))
+            scaledPix = self.origIcons[i].scaled(64, 64)
             pic.setPixmap(scaledPix) #icon
             pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
@@ -149,6 +143,7 @@ class WeatherWidget(QtGui.QWidget):
     #def end
 
     def updateWeather(self): # Update the current weather
+        self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
         w = self.observation.get_weather()
 
         pic = self.grid.itemAtPosition(1,0).widget()
@@ -213,15 +208,16 @@ class WeatherWidget(QtGui.QWidget):
 
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
         font = QtGui.QFont()
-        maxSize = 20 # max font for displaying the dates
+        maxDateSize = 20 # max font for displaying the dates
+        maxSize = 14 # max font for displaying temperatures
         i = 0
         
         while i < 5:
             widg = self.grid.itemAtPosition(0, i).widget() # Resize dates
             rect = self.grid.cellRect(0, i)
             size = self.bestFontSize(widg.text(), rect)
-            if (size > maxSize):
-                size = maxSize
+            if (size > maxDateSize):
+                size = maxDateSize
             
             if (i == 0):
                 font.setBold(True) # have "Today" be bolded to stand out
@@ -231,6 +227,17 @@ class WeatherWidget(QtGui.QWidget):
                 font.setBold(False)
             widg.setFont(font)
             font.setBold(False)
+
+            # Resize pictures to keep aspectratio
+            widg = self.grid.itemAtPosition(1, i).widget()
+            rect = self.grid.cellRect(1, i)
+            if rect.width() < rect.height(): # get mininum of width and height
+                picSize = rect.width()
+            else:
+                picSize = rect.height() 
+            scaledPix = self.origIcons[i].scaled(picSize, picSize)
+            print(str(scaledPix.width()) + ", " + str(scaledPix.height()))
+            widg.setPixmap(scaledPix) #icon
             
             widg = self.grid.itemAtPosition(2, i).widget() # Resize temps
             rect = self.grid.cellRect(2, i)

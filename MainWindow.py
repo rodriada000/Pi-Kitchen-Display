@@ -45,9 +45,9 @@ class Ui_MainWindow(object):
         # Weather Display Widget
         self.frame_weather = QtGui.QFrame(self.centralwidget)
         self.frame_weather.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.frame_weather.setFrameShadow(QtGui.QFrame.Plain)
+        self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
-        self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 2)
+        self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
 
         self.weather_hlay = QtGui.QHBoxLayout(self.frame_weather)
         self.weather_hlay.addWidget(WeatherWidget(self.frame_weather))
@@ -59,7 +59,6 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
         self.frame.setSizePolicy(sizePolicy)
         self.frame.setMinimumSize(QtCore.QSize(211, 150))
-        self.frame.setMaximumSize(QtCore.QSize(211, 161))
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Plain)
         self.frame.setObjectName(_fromUtf8("frame"))
@@ -68,7 +67,6 @@ class Ui_MainWindow(object):
         # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
         self.label_clock.setMinimumSize(QtCore.QSize(111, 41))
-        self.label_clock.setMaximumSize(QtCore.QSize(211, 41))
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("Droid Sans [monotype]"))
         font.setPointSize(28)
@@ -84,7 +82,7 @@ class Ui_MainWindow(object):
         self.label_clock.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_clock.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label_clock.setObjectName(_fromUtf8("label_clock"))
-        self.gridLayout.addWidget(self.label_clock, 1, 2, 1, 1)
+        self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 1)
         self.clockTimer = QtCore.QTimer()
         self.clockTimer.timeout.connect(self.updateClock)
         self.clockTimer.start(1000)
@@ -101,7 +99,7 @@ class Ui_MainWindow(object):
 
         # Calendar Widget
         self.calendarWidget_main = QtGui.QCalendarWidget(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.calendarWidget_main.sizePolicy().hasHeightForWidth())
