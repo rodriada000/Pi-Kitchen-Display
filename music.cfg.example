@@ -1,0 +1,5 @@
+# Lines beginning with '#' will be ignored
+# Place your music server url in this file (Format is usally http://IP_ADDRESS:PORT_NUMBER)
+# Any web based music player that uses html5 or javascript should work (no html5 player has been tested)
+#
+http://IP_ADDRESS:PORT_NUMBER
