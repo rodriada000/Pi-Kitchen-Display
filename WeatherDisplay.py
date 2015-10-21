@@ -181,12 +181,20 @@ class WeatherWidget(QtGui.QWidget):
             date = self.grid.itemAtPosition(0,i).widget()
             date.setText(t.split(" ")[0][5:]) # date
 
-            pic = self.grid.itemAtPosition(1,i).widget()
-            pixmap = QtGui.QPixmap(self.getIcon(weather.get_weather_code()))
-            pic.setPixmap(pixmap) #icon
+            self.origIcons[i] = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
+            rect = self.grid.cellRect(1, i) # get bounds of grid cell
+            if rect.width() < rect.height(): # use mininum of width or height for icon size
+                picSize = rect.width()
+            else:
+                picSize = rect.height() 
+            scaledPix = self.origIcons[i].scaled(picSize, picSize)
 
+            pic = self.grid.itemAtPosition(1,i).widget() # get icon label widget
+            pic.setPixmap(scaledPix)
+
+            # Update temperature label with new temp
             temp = self.grid.itemAtPosition(2,i).widget()
-            temp.setText('H: ' + str(w['max']) + '°\nL: ' + str(w['min']) + '°') # temperature
+            temp.setText('H: ' + str(w['max']) + '°\nL: ' + str(w['min']) + '°')
 
             det = self.grid.itemAtPosition(3,i).widget()
             det.setText(weather.get_detailed_status()) # details
