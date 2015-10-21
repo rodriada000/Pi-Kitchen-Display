@@ -14,7 +14,9 @@ class MusicPage(QtGui.QWidget):
         try:
             with open('music.cfg') as settings:
                 lines = [line.rstrip('\n') for line in settings]
-                self.serverUrl = lines[0] # Server should be first line in file
+                i = 0
+                while (lines[i][0] == '#'): i += 1 # skip lines beginning with '#'
+                self.serverUrl = lines[i] # Server should be first line in file
         except:
             print("Failed to get music server url...")
             return

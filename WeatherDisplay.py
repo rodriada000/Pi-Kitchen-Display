@@ -22,8 +22,10 @@ class WeatherWidget(QtGui.QWidget):
         try:
             with open('weather.cfg') as settings:
                 lines = [line.rstrip('\n') for line in settings]
-                self.API_key = lines[0] # API Key should be first line in weather.cfg
-                self.userLocation = lines[1] # Location should be second line
+                i = 0
+                while (lines[i][0] == '#'): i += 1
+                self.API_key = lines[i] # API Key should be first line in weather.cfg
+                self.userLocation = lines[i+1] # Location should be second line
         except:
             print("Failed to open weather.cfg..")
             return
