@@ -32,12 +32,14 @@ class WeatherWidget(QtGui.QWidget):
             print("Failed to open weather.cfg..")
             return
 
+        # Get OWM object based off given API key
         try:
             self.owm = pyowm.OWM(self.API_key)
         except:
             print("Failed to get owm object with given API key: " + self.API_key)
             return
 
+        # Get observation object based off given location
         try:
             self.observation = self.owm.weather_at_place(self.userLocation)
             if (self.observation is None):
@@ -47,6 +49,7 @@ class WeatherWidget(QtGui.QWidget):
             return
 
         self.initUI()
+    #def end
 
     def initUI(self):
 
@@ -135,7 +138,7 @@ class WeatherWidget(QtGui.QWidget):
     #def end
 
     def getIcon(self, code): # Fetch correct weather icon based on weather code (http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes)
-        if (code in wIcons.keys()):
+        if code in wIcons.keys():
             return "weathericons/" + wIcons[code]
         else:
             print("MISSING WEATHER CODE IS: " + str(code))
@@ -150,8 +153,14 @@ class WeatherWidget(QtGui.QWidget):
         temp = self.grid.itemAtPosition(2,0).widget()
         det = self.grid.itemAtPosition(3,0).widget()
 
-        pixmap = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
-        pic.setPixmap(pixmap)
+        self.origIcons[0] = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
+        rect = self.grid.cellRect(1, 0) # get bounds of grid cell
+        if rect.width() < rect.height(): # use mininum of width or height for icon size
+            picSize = rect.width()
+        else:
+            picSize = rect.height() 
+        scaledPix = self.origIcons[0].scaled(picSize, picSize)
+        pic.setPixmap(scaledPix) #icon
 
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
         det.setText(w.get_detailed_status())
@@ -186,18 +195,18 @@ class WeatherWidget(QtGui.QWidget):
     #def end
             
     def bestFontSize(self, text, cellRect):
-        size = 1
+        size = 2 # minimum font size of 2
         ff = QtGui.QFont()
         ff.setPointSize(size)
         
-        if ('\n' in text): # measure width of text upto newline if there is one
+        if '\n' in text: # measure width of text upto newline if there is one
             text = text.split('\n')[0]
         
         qf = QtGui.QFontMetrics(ff)
         
         while (True):
             textRect = qf.boundingRect(text)
-            if (textRect.width() > cellRect.width()):
+            if textRect.width() > cellRect.width():
                 break
             size += 1
             ff.setPointSize(size)
@@ -209,17 +218,18 @@ class WeatherWidget(QtGui.QWidget):
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
         font = QtGui.QFont()
         maxDateSize = 20 # max font for displaying the dates
-        maxSize = 14 # max font for displaying temperatures
+        maxSize = 14 # max font for displaying temperatures & details
         i = 0
         
         while i < 5:
-            widg = self.grid.itemAtPosition(0, i).widget() # Resize dates
+            # Resize dates
+            widg = self.grid.itemAtPosition(0, i).widget()
             rect = self.grid.cellRect(0, i)
             size = self.bestFontSize(widg.text(), rect)
             if (size > maxDateSize):
                 size = maxDateSize
             
-            if (i == 0):
+            if i == 0:
                 font.setBold(True) # have "Today" be bolded to stand out
                 font.setPointSize(size)
             else:
@@ -236,21 +246,22 @@ class WeatherWidget(QtGui.QWidget):
             else:
                 picSize = rect.height() 
             scaledPix = self.origIcons[i].scaled(picSize, picSize)
-            print(str(scaledPix.width()) + ", " + str(scaledPix.height()))
             widg.setPixmap(scaledPix) #icon
             
-            widg = self.grid.itemAtPosition(2, i).widget() # Resize temps
+             # Resize Temperatures label
+            widg = self.grid.itemAtPosition(2, i).widget()
             rect = self.grid.cellRect(2, i)
             size = self.bestFontSize(widg.text(), rect) - 1
-            if (size > maxSize):
+            if size > maxSize:
                 size = maxSize
             font.setPointSize(size)
             widg.setFont(font)
             
-            widg = self.grid.itemAtPosition(3, i).widget() # Resize weather details
+            # Resize weather details
+            widg = self.grid.itemAtPosition(3, i).widget()
             rect = self.grid.cellRect(3, i)
             size = self.bestFontSize(widg.text(), rect) - 1
-            if (size > maxSize):
+            if size > maxSize:
                 size = maxSize
             font.setPointSize(size)
             widg.setFont(font)
