@@ -1,0 +1,8 @@
+#Cfg file that contains personal API key
+weather.cfg
+
+#Cfg file that contains music server url
+music.cfg
+
+# Cache files that python generates
+__pycache__

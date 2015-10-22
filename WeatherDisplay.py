@@ -134,6 +134,8 @@ class WeatherWidget(QtGui.QWidget):
             self.grid.addWidget(det, 3, i)
             i = i + 1
 
+        self.grid.setContentsMargins(2, 2, 2, 2)
+        self.grid.setSpacing(3)
         self.show() # SHOW YOURSELF
     #def end
 
