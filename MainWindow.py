@@ -11,6 +11,7 @@ from time import strftime
 from PyQt4 import QtCore, QtGui
 from MusicBrowser import MusicPage
 from WeatherDisplay import WeatherWidget
+from DishWashWidget import DishWasherWidget
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -47,10 +48,10 @@ class Ui_MainWindow(object):
         self.frame_weather.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
-
         weather_hlay = QtGui.QHBoxLayout(self.frame_weather)
         weather_hlay.addWidget(WeatherWidget(self.frame_weather))
 
+        # Side frame
         self.frame = QtGui.QFrame(self.centralwidget)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
@@ -84,12 +85,16 @@ class Ui_MainWindow(object):
         self.clockTimer.start(1000)
 
         self.pushButton_internet = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_internet.setMinimumSize(QtCore.QSize(100, 51))
         self.pushButton_internet.setObjectName(_fromUtf8("pushButton_internet"))
+        
+        # Bottom frame
         self.frame_2 = QtGui.QFrame(self.centralwidget)
         self.frame_2.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_2.setObjectName(_fromUtf8("frame_2"))
+        dish_hlay = QtGui.QHBoxLayout(self.frame_2)
+        dish_hlay.addWidget(DishWasherWidget(self.frame_2))
+        dish_hlay.setContentsMargins(2, 4, 2, 4)
 
         # Calendar Widget
         self.calendarWidget_main = QtGui.QCalendarWidget(self.centralwidget)
@@ -101,7 +106,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setFamily(_fromUtf8("FreeSans"))
         self.calendarWidget_main.setFont(font)
-        self.calendarWidget_main.setCursor(QtGui.QCursor(QtCore.Qt.BlankCursor))
         self.calendarWidget_main.setFirstDayOfWeek(QtCore.Qt.Monday)
         self.calendarWidget_main.setVerticalHeaderFormat(QtGui.QCalendarWidget.NoVerticalHeader)
         self.calendarWidget_main.setNavigationBarVisible(False)
@@ -126,15 +130,14 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
 
-        self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 2)
-        self.gridLayout.addWidget(self.frame, 0, 2, 1, 2)
-        self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 1)
+        # Add widgets to grid layout
+        self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
+        self.gridLayout.addWidget(self.frame, 0, 3, 1, 2)
+        self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 2)
         self.gridLayout.addWidget(self.pushButton_internet, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 2, 1, 2, 2)
-        self.gridLayout.addWidget(self.calendarWidget_main, 2, 3, 2, 1)
-
-
+        self.gridLayout.addWidget(self.calendarWidget_main, 2, 3, 2, 2)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -152,6 +155,8 @@ class Ui_MainWindow(object):
             self.musicPlayer.show()
         else: # Create music player if not opened yet
             self.musicPlayer = MusicPage(self.centralwidget, self.centralwidget.geometry())
+            if self.musicPlayer is None:
+                return # exit function if failed to create widget
             self.musicOpened = True
 
     def updateClock(self):

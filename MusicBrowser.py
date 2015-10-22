@@ -19,7 +19,7 @@ class MusicPage(QtGui.QWidget):
                 self.serverUrl = lines[i] # Server should be first line in file
         except:
             print("Failed to get music server url...")
-            return
+            return None
 
         self.resize(size.width(), size.height())
         self.initUI(size)
