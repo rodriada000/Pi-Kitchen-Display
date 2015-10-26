@@ -63,12 +63,24 @@ class DishWasherWidget(QtGui.QWidget):
     
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside cell
         font = QtGui.QFont()
-        maxSize = 16 # max font for displaying temperatures & details
         
+        # Resize 'dirty/clean' status label
+        widg = self.vLayout.itemAt(0).widget()
+        rect = self.vLayout.itemAt(0).geometry()
+        
+        maxSize = 24 # max font for displaying 'dirty/clean'
+        size = self.bestFontSize(widg.text(), rect) # get best size for QRect
+        if size > maxSize:
+            size = maxSize
+        font.setPointSize(size)
+        widg.setFont(font)
+
+        # Resize 'last updated' label
+        maxSize = 16;
         widg = self.vLayout.itemAt(1).widget()
         rect = self.vLayout.itemAt(1).geometry()
         
-        size = self.bestFontSize("Last updated " + strftime("%b %d %-I:%M"), rect) # get best size for QRect
+        size = self.bestFontSize(widg.text(), rect) # get best size for QRect
         if size > maxSize:
             size = maxSize
         font.setPointSize(size)

@@ -91,7 +91,7 @@ class WeatherWidget(QtGui.QWidget):
 
         # Today weather details label
         det = QtGui.QLabel()
-        det.setText(w.get_detailed_status()) # details
+        det.setText(w.get_detailed_status().replace(' ', '\n')) # details
         det.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
         self.grid.addWidget(date, 0, 0)
@@ -125,7 +125,7 @@ class WeatherWidget(QtGui.QWidget):
             temp.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             det = QtGui.QLabel()
-            det.setText(weather.get_detailed_status()) # details
+            det.setText(weather.get_detailed_status().replace(' ', '\n')) # details
             det.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             self.grid.addWidget(date, 0, i)
@@ -165,7 +165,7 @@ class WeatherWidget(QtGui.QWidget):
         pic.setPixmap(scaledPix) #icon
 
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
-        det.setText(w.get_detailed_status())
+        det.setText(w.get_detailed_status().replace(' ', '\n'))
 
         print("current forecast updated with temps: " + str(w.get_temperature('fahrenheit')))
     #def end
@@ -199,7 +199,7 @@ class WeatherWidget(QtGui.QWidget):
             temp.setText('H: ' + str(w['max']) + '°\nL: ' + str(w['min']) + '°')
 
             det = self.grid.itemAtPosition(3,i).widget()
-            det.setText(weather.get_detailed_status()) # details
+            det.setText(weather.get_detailed_status().replace(' ', '\n')) # details
 
             i = i + 1
     #def end
@@ -243,7 +243,7 @@ class WeatherWidget(QtGui.QWidget):
                 font.setBold(True) # have "Today" be bolded to stand out
                 font.setPointSize(size)
             else:
-                font.setPointSize(size - 2) # have "Today" be 2pt bigger than other dates
+                font.setPointSize(size - 2) # have dates be 2pt smaller than "Today"
                 font.setBold(False)
             widg.setFont(font)
             font.setBold(False)
