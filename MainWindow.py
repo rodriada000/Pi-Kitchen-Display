@@ -144,7 +144,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.label_clock.setText(_translate("MainWindow", strftime("%-I" + ":" + "%M"), None))
+        self.label_clock.setText(_translate("MainWindow", strftime("%-I:%M:%S"), None))
         self.pushButton_internet.setText(_translate("MainWindow", "Web Browser", None))
         self.pushButton_mp.setText(_translate("MainWindow", "Music Player", None))
 
@@ -160,6 +160,6 @@ class Ui_MainWindow(object):
             self.musicOpened = True
 
     def updateClock(self):
-        self.label_clock.setText(strftime("%-I" + ":" + "%M"))
+        self.label_clock.setText(strftime("%-I:%M:%S"))
 
 
