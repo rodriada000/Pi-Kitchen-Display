@@ -18,19 +18,33 @@ class DishWasherWidget(QtGui.QWidget):
         self.vLayout = QtGui.QVBoxLayout(self)
         self.updateBtn = QtGui.QPushButton()
         self.statusLabel = QtGui.QLabel()
+        self.timeLabel = QtGui.QLabel()
+        
+        # Font for status
+        font = QtGui.QFont()
+        font.setPointSize(24) # Static size for now
+        font.setBold(True)
+        self.statusLabel.setFont(font)
         
         self.updateBtn.setText("Update")
-        self.updateBtn.setMinimumHeight(35)
+        self.updateBtn.setMinimumHeight(30)
+        font.setPointSize(12)
+        font.setBold(False)
+        self.updateBtn.setFont(font)
         self.updateBtn.clicked.connect(self.updateStatus)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         self.updateBtn.setSizePolicy(sizePolicy)
-        # self.updateBtn.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
         
-        self.statusLabel.setText("Dishes Clean\nLast updated " + strftime("%c"))
+        hlay = QtGui.QHBoxLayout()
+        hlay.addStretch(1)
+        hlay.addWidget(self.updateBtn)
+        
+        self.updateStatus() # set intial text
         
         self.vLayout.addWidget(self.statusLabel)
-        self.vLayout.addWidget(self.updateBtn)
-        self.vLayout.setContentsMargins(2, 2, 2, 2)
+        self.vLayout.addWidget(self.timeLabel)
+        self.vLayout.addLayout(hlay)
+        self.vLayout.setContentsMargins(5, 5, 5, 5)
         self.vLayout.setSpacing(1)
         
         self.show()
@@ -38,21 +52,23 @@ class DishWasherWidget(QtGui.QWidget):
     
     def updateStatus(self):
         if self.clean is True:
-            self.statusLabel.setText("Dishes Dirty\nLast updated " + strftime("%c"))
+            self.statusLabel.setText("Dishes Dirty")
             self.clean = False
         else:
-            self.statusLabel.setText("Dishes Clean\nLast updated " + strftime("%c"))
+            self.statusLabel.setText("Dishes Clean")
             self.clean = True
+        
+        self.timeLabel.setText("Last updated " + strftime("%b %d %-I:%M"))
     #def end
     
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside cell
         font = QtGui.QFont()
         maxSize = 16 # max font for displaying temperatures & details
         
-        widg = self.vLayout.itemAt(0).widget()
-        rect = self.vLayout.itemAt(0).geometry()
+        widg = self.vLayout.itemAt(1).widget()
+        rect = self.vLayout.itemAt(1).geometry()
         
-        size = self.bestFontSize("Last updated " + strftime("%c"), rect) # get best size for QRect
+        size = self.bestFontSize("Last updated " + strftime("%b %d %-I:%M"), rect) # get best size for QRect
         if size > maxSize:
             size = maxSize
         font.setPointSize(size)
