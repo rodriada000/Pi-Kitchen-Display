@@ -121,7 +121,7 @@ class WeatherWidget(QtGui.QWidget):
             pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             temp = QtGui.QLabel()
-            temp.setText('H: ' + str(w['max']) + '°\nL: ' + str(w['min']) + '°') # temperature
+            temp.setText('High: ' + str(w['max']) + '°\nLow: ' + str(w['min']) + '°') # temperature
             temp.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             det = QtGui.QLabel()
@@ -196,7 +196,7 @@ class WeatherWidget(QtGui.QWidget):
 
             # Update temperature label with new temp
             temp = self.grid.itemAtPosition(2,i).widget()
-            temp.setText('H: ' + str(w['max']) + '°\nL: ' + str(w['min']) + '°')
+            temp.setText('High: ' + str(w['max']) + '°\nLow: ' + str(w['min']) + '°')
 
             det = self.grid.itemAtPosition(3,i).widget()
             det.setText(weather.get_detailed_status().replace(' ', '\n')) # details
@@ -226,7 +226,7 @@ class WeatherWidget(QtGui.QWidget):
     #def end
 
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
-        font = QtGui.QFont()
+        font = QtGui.QFont("Arial")
         maxDateSize = 20 # max font for displaying the dates
         maxSize = 14 # max font for displaying temperatures & details
         i = 0

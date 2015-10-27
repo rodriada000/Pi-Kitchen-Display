@@ -12,6 +12,7 @@ class StartQT4(QtGui.QMainWindow):
 
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+    QtGui.QFontDatabase.addApplicationFont("font/OSP-DIN.ttf")
 
     screen_rect = app.desktop().screenGeometry()
     width, height = screen_rect.width(), screen_rect.height()
