@@ -12,6 +12,7 @@ from PyQt4 import QtCore, QtGui
 from MusicBrowser import MusicPage
 from WeatherDisplay import WeatherWidget
 from DishWashWidget import DishWasherWidget
+from WebBrowser import WebPage
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -85,8 +86,6 @@ class Ui_MainWindow(object):
         self.clockTimer.timeout.connect(self.updateClock)
         self.clockTimer.start(1000)
 
-        self.pushButton_internet = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_internet.setObjectName(_fromUtf8("pushButton_internet"))
         
         # Bottom frame
         self.frame_2 = QtGui.QFrame(self.centralwidget)
@@ -113,6 +112,11 @@ class Ui_MainWindow(object):
         self.calendarWidget_main.setDateEditEnabled(False)
         self.calendarWidget_main.setObjectName(_fromUtf8("calendarWidget_main"))
 
+        # Youtube button (just opens the webbrowser and goes straight to youtube)
+        self.pushButton_youtube = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_youtube.setObjectName(_fromUtf8("pushButton_youtube"))
+        self.pushButton_youtube.clicked.connect(self.ytClick)
+        
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
         self.pushButton_mp.setMinimumSize(QtCore.QSize(100, 51))
@@ -123,9 +127,8 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.pushButton_mp.sizePolicy().hasHeightForWidth())
         self.pushButton_mp.setSizePolicy(sizePolicy)
         self.pushButton_mp.clicked.connect(self.mpClick)
-        MainWindow.setCentralWidget(self.centralwidget)
         self.musicOpened = False
-
+        
         # Status Bar
         self.statusbar = QtGui.QStatusBar(MainWindow)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
@@ -135,19 +138,21 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
         self.gridLayout.addWidget(self.frame, 0, 3, 1, 2)
         self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 2)
-        self.gridLayout.addWidget(self.pushButton_internet, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_youtube, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 2, 1, 2, 2)
         self.gridLayout.addWidget(self.calendarWidget_main, 2, 3, 2, 2)
 
+        MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_clock.setText(_translate("MainWindow", strftime("%-I:%M:%S"), None))
-        self.pushButton_internet.setText(_translate("MainWindow", "Web Browser", None))
+        self.pushButton_youtube.setText(_translate("MainWindow", "Web Browser", None))
         self.pushButton_mp.setText(_translate("MainWindow", "Music Player", None))
+    #def end
 
     def mpClick(self):
         # Check if music player is already opened but is hidden
@@ -159,8 +164,14 @@ class Ui_MainWindow(object):
             if self.musicPlayer is None:
                 return # exit function if failed to create widget
             self.musicOpened = True
+    #def end
 
     def updateClock(self):
         self.label_clock.setText(strftime("%-I:%M:%S"))
+    #def end
+    
+    def ytClick(self):
+        # Open a webbrowser and redirect to youtube
+        self.youtubePlayer = WebPage(self.centralwidget, self.centralwidget.geometry(), "http://www.youtube.com")
 
 
