@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import pyowm
 from time import *
+from datetime import datetime
 from PyQt4 import QtCore, QtGui
 
 wIcons = {800:'sunny.png', 801:'partcloudy.png', 802:'cloudy.png', 803:'clouds.png', 804:'clouds.png', 701:'mist.png',
@@ -48,23 +49,20 @@ class WeatherWidget(QtGui.QWidget):
             print("Failed to get weather at given location: " + self.userLocation)
             return
 
-        self.initUI()
-    #def end
-
-    def initUI(self):
-
         #Initialize timers
         self.currentTimer = QtCore.QTimer()
         self.currentTimer.timeout.connect(self.updateWeather)
-        self.currentTimer.start(600000) # Update current weather every 10 min
+        self.currentTimer.start(900000) # Update current weather every 15 min
 
         self.forecastTimer = QtCore.QTimer()
         self.forecastTimer.timeout.connect(self.updateForecast)
         self.forecastTimer.start(3600000) # Update forecast every hour
 
-        # Initialize current Temperatures
+        self.initUI()
+    #def end
+
+    def initUI(self):
         self.grid = QtGui.QGridLayout(self) # Gridlayout to contain all widgets
-        w = self.observation.get_weather()
 
         # Today date label
         date = QtGui.QLabel()
@@ -77,21 +75,15 @@ class WeatherWidget(QtGui.QWidget):
 
         # Today Icon label
         pic = QtGui.QLabel()
-        self.origIcons.append(QtGui.QPixmap(self.getIcon(w.get_weather_code())))
-        pic.setPixmap(self.origIcons[0].scaled(64, 64)) #icon
         pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
+        self.origIcons.append(QtGui.QPixmap())
 
         # Today temps label
         temp = QtGui.QLabel()
-        ff.setPointSize(12)
-        ff.setBold(False)
-        temp.setFont(ff)
-        temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°') # temperature
         temp.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
         # Today weather details label
         det = QtGui.QLabel()
-        det.setText(w.get_detailed_status().replace(' ', '\n')) # details
         det.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
         self.grid.addWidget(date, 0, 0)
@@ -99,40 +91,31 @@ class WeatherWidget(QtGui.QWidget):
         self.grid.addWidget(temp, 2, 0)
         self.grid.addWidget(det, 3, 0)
 
-        # Initialize next 4 days of weather
-        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
-        f = forecast.get_forecast()
-        wlist = f.get_weathers()
-
+        # Initialize 4-day Forecast widgets
         i = 1
-        for weather in wlist[1:]:
-            t = weather.get_reference_time('iso')
-            w = weather.get_temperature('fahrenheit')
-
+        while i < 5:
             date = QtGui.QLabel()
-            date.setText(t.split(" ")[0][5:]) # date
-            date.setFont(ff)
             date.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             pic = QtGui.QLabel()
-            self.origIcons.append(QtGui.QPixmap(self.getIcon(weather.get_weather_code())))
-            scaledPix = self.origIcons[i].scaled(64, 64)
-            pic.setPixmap(scaledPix) #icon
             pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
+            self.origIcons.append(QtGui.QPixmap())
 
             temp = QtGui.QLabel()
-            temp.setText('High: ' + str(w['max']) + '°\nLow: ' + str(w['min']) + '°') # temperature
             temp.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
-
+            
             det = QtGui.QLabel()
-            det.setText(weather.get_detailed_status().replace(' ', '\n')) # details
             det.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
-
+            
             self.grid.addWidget(date, 0, i)
             self.grid.addWidget(pic, 1, i)
             self.grid.addWidget(temp, 2, i)
             self.grid.addWidget(det, 3, i)
+
             i = i + 1
+
+        self.updateWeather()
+        self.updateForecast() # populate with weather
 
         self.grid.setContentsMargins(2, 2, 2, 2)
         self.grid.setSpacing(3)
@@ -166,22 +149,21 @@ class WeatherWidget(QtGui.QWidget):
 
         temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
         det.setText(w.get_detailed_status().replace(' ', '\n'))
-
-        print("current forecast updated with temps: " + str(w.get_temperature('fahrenheit')))
     #def end
 
     def updateForecast(self): # Update the forecast (next 4 days of weather)
-        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), limit=5)
+        self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
+        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), 5)
         f = forecast.get_forecast()
         wlist = f.get_weathers()
 
         i = 1
         for weather in wlist[1:]:
-            t = weather.get_reference_time('iso')
+            t = weather.get_reference_time('iso').split(' ')[0] # Get date in format YYYY-MM-DD
             w = weather.get_temperature('fahrenheit')
 
             date = self.grid.itemAtPosition(0,i).widget()
-            date.setText(t.split(" ")[0][5:]) # date
+            date.setText(datetime.strptime(t, '%Y-%m-%d').strftime('%a')) # date converted to day of week
 
             self.origIcons[i] = QtGui.QPixmap(self.getIcon(weather.get_weather_code())) # Update icon
             rect = self.grid.cellRect(1, i) # get bounds of grid cell
@@ -227,7 +209,7 @@ class WeatherWidget(QtGui.QWidget):
 
     def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
         font = QtGui.QFont("Arial")
-        maxDateSize = 20 # max font for displaying the dates
+        maxDateSize = 18 # max font for displaying the dates
         maxSize = 14 # max font for displaying temperatures & details
         i = 0
         
@@ -241,9 +223,9 @@ class WeatherWidget(QtGui.QWidget):
             
             if i == 0:
                 font.setBold(True) # have "Today" be bolded to stand out
-                font.setPointSize(size)
+                font.setPointSize(size + 1)
             else:
-                font.setPointSize(size - 2) # have dates be 2pt smaller than "Today"
+                font.setPointSize(size - 1) # have dates be 1pt smaller than "Today"
                 font.setBold(False)
             widg.setFont(font)
             font.setBold(False)
