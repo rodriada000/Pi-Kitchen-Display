@@ -13,6 +13,7 @@ from MusicBrowser import MusicPage
 from WeatherDisplay import WeatherWidget
 from DishWashWidget import DishWasherWidget
 from WebBrowser import WebPage
+from NewsDisplay import NewsWidget
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -58,6 +59,9 @@ class Ui_MainWindow(object):
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
+        news_hlay = QtGui.QHBoxLayout(self.frame)
+        news_hlay.addWidget(NewsWidget(self.frame))
+        news_hlay.setContentsMargins(2, 4, 2, 4)
 
         # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
@@ -172,6 +176,6 @@ class Ui_MainWindow(object):
     
     def ytClick(self):
         # Open a webbrowser and redirect to youtube
-        self.youtubePlayer = WebPage(self.centralwidget, self.centralwidget.geometry(), "http://www.youtube.com")
+        self.youtubePlayer = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
 
 
