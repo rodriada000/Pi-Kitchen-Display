@@ -4,5 +4,9 @@ weather.cfg
 #Cfg file that contains music server url
 music.cfg
 
+#Cfg file that conatins rss feeds and weather
+rssfeed.cfg
+weather.cfg
+
 # Cache files that python generates
 __pycache__

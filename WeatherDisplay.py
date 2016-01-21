@@ -131,8 +131,12 @@ class WeatherWidget(QtGui.QWidget):
     #def end
 
     def updateWeather(self): # Update the current weather
+        print("userLocation: " + self.userLocation)
+        print("self.observation: " + str(self.observation))
         self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
+        print("new observation: " + str(self.observation))
         w = self.observation.get_weather()
+        print(w)
 
         pic = self.grid.itemAtPosition(1,0).widget()
         temp = self.grid.itemAtPosition(2,0).widget()
@@ -143,7 +147,7 @@ class WeatherWidget(QtGui.QWidget):
         if rect.width() < rect.height(): # use mininum of width or height for icon size
             picSize = rect.width()
         else:
-            picSize = rect.height() 
+            picSize = rect.height()
         scaledPix = self.origIcons[0].scaled(picSize, picSize)
         pic.setPixmap(scaledPix) #icon
 
@@ -170,7 +174,7 @@ class WeatherWidget(QtGui.QWidget):
             if rect.width() < rect.height(): # use mininum of width or height for icon size
                 picSize = rect.width()
             else:
-                picSize = rect.height() 
+                picSize = rect.height()
             scaledPix = self.origIcons[i].scaled(picSize, picSize)
 
             pic = self.grid.itemAtPosition(1,i).widget() # get icon label widget
@@ -236,7 +240,7 @@ class WeatherWidget(QtGui.QWidget):
             if rect.width() < rect.height(): # get mininum of width and height
                 picSize = rect.width()
             else:
-                picSize = rect.height() 
+                picSize = rect.height()
             scaledPix = self.origIcons[i].scaled(picSize, picSize)
             widg.setPixmap(scaledPix) #icon
             
