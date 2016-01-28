@@ -15,6 +15,8 @@ from DishWashWidget import DishWasherWidget
 from WebBrowser import WebPage
 from NewsDisplay import NewsWidget
 
+print("loading ui ...")
+
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
 except AttributeError:
@@ -61,7 +63,7 @@ class Ui_MainWindow(object):
         self.frame.setObjectName(_fromUtf8("frame"))
         news_hlay = QtGui.QHBoxLayout(self.frame)
         news_hlay.addWidget(NewsWidget(self.frame))
-        news_hlay.setContentsMargins(2, 4, 2, 4)
+        news_hlay.setContentsMargins(2, 2, 2, 2)
 
         # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
@@ -116,10 +118,10 @@ class Ui_MainWindow(object):
         self.calendarWidget_main.setDateEditEnabled(False)
         self.calendarWidget_main.setObjectName(_fromUtf8("calendarWidget_main"))
 
-        # Youtube button (just opens the webbrowser and goes straight to youtube)
-        self.pushButton_youtube = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_youtube.setObjectName(_fromUtf8("pushButton_youtube"))
-        self.pushButton_youtube.clicked.connect(self.ytClick)
+        # WebBrowser button
+        self.pushButton_web = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_web.setObjectName(_fromUtf8("pushButton_web"))
+        self.pushButton_web.clicked.connect(self.btClick)
         
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
@@ -142,7 +144,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
         self.gridLayout.addWidget(self.frame, 0, 3, 1, 2)
         self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 2)
-        self.gridLayout.addWidget(self.pushButton_youtube, 2, 0, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_web, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 2, 1, 2, 2)
         self.gridLayout.addWidget(self.calendarWidget_main, 2, 3, 2, 2)
@@ -154,7 +156,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
         self.label_clock.setText(_translate("MainWindow", strftime("%-I:%M:%S"), None))
-        self.pushButton_youtube.setText(_translate("MainWindow", "Web Browser", None))
+        self.pushButton_web.setText(_translate("MainWindow", "Web Browser", None))
         self.pushButton_mp.setText(_translate("MainWindow", "Music Player", None))
     #def end
 
@@ -174,8 +176,8 @@ class Ui_MainWindow(object):
         self.label_clock.setText(strftime("%-I:%M:%S"))
     #def end
     
-    def ytClick(self):
-        # Open a webbrowser and redirect to youtube
-        self.youtubePlayer = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
+    def btClick(self):
+        # Open a webbrowser with homepage google.com
+        self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
 
 

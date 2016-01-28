@@ -4,6 +4,7 @@ import feedparser
 from time import *
 from datetime import datetime
 from PyQt4 import QtCore, QtGui
+from random import choice
 
 class NewsWidget(QtGui.QWidget):
 
@@ -33,6 +34,21 @@ class NewsWidget(QtGui.QWidget):
         
     def initUI(self):
         vLay = QtGui.QVBoxLayout(self)
+        vLay.setSpacing(0)
+        
         scroll = QtGui.QScrollArea()
         scroll.setWidgetResizable(True)
         vLay.addWidget(scroll)
+        
+        w = QtGui.QWidget(self)
+        vbox = QtGui.QVBoxLayout(w)
+        
+        for x in range(0, choice(range(50,150))):
+            _l = QtGui.QHBoxLayout()
+            _l.addWidget(QtGui.QLabel("Label # %d" % x, self))
+            _l.addWidget(QtGui.QCheckBox(self))
+            _l.addWidget(QtGui.QComboBox(self))
+            _l.addStretch(1)
+            vbox.addLayout(_l)
+            
+        scroll.setWidget(w)

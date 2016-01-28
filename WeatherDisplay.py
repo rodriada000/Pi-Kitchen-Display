@@ -131,12 +131,8 @@ class WeatherWidget(QtGui.QWidget):
     #def end
 
     def updateWeather(self): # Update the current weather
-        print("userLocation: " + self.userLocation)
-        print("self.observation: " + str(self.observation))
         self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
-        print("new observation: " + str(self.observation))
         w = self.observation.get_weather()
-        print(w)
 
         pic = self.grid.itemAtPosition(1,0).widget()
         temp = self.grid.itemAtPosition(2,0).widget()

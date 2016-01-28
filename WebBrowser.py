@@ -1,6 +1,21 @@
 # -*- coding: utf-8 -*-
 import sys
-from PyQt4 import QtCore, QtGui, QtWebKit
+from PyQt4 import QtCore, QtGui, QtWebKit, QtNetwork
+from PyQt4.QtNetwork import QNetworkAccessManager
+from abpy import Filter
+
+print("loading adblock filter ...")
+adblockFilter = Filter(open("easylist.txt", 'r', encoding='utf-8'))
+print("done.")
+
+class MyNetworkAccessManager(QNetworkAccessManager): # inherited class that is modified to ignore network requests from known ad sources
+    def createRequest(self, op, request, device=None):
+        url = request.url().toString()
+        doFilter = adblockFilter.match(url)
+        if doFilter:
+            return QNetworkAccessManager.createRequest(self, self.GetOperation, QtNetwork.QNetworkRequest(QtCore.QUrl()))
+        else:
+            return QNetworkAccessManager.createRequest(self, op, request, device)
 
 class WebPage(QtGui.QWidget):
 
@@ -9,6 +24,7 @@ class WebPage(QtGui.QWidget):
             Initialize the browser GUI and connect the events
         """
         super(WebPage, self).__init__(parent)
+        self.myNetAccessManager = MyNetworkAccessManager()
         
         self.resize(size.width(), size.height())
         self.initUI(url)
@@ -18,13 +34,16 @@ class WebPage(QtGui.QWidget):
         self.vlay = QtGui.QVBoxLayout(self)
         self.hlay = QtGui.QHBoxLayout() # Layouts
 
-        self.page = QtWebKit.QWebView()
+        self.web = QtWebKit.QWebView()
+        self.web.page().setNetworkAccessManager(self.myNetAccessManager)
+        
         if url is None:
-            self.page.setUrl(QtCore.QUrl("http://www.google.com")) # homepage is google
+            self.web.setUrl(QtCore.QUrl("http://www.google.com")) # homepage is google
         else:
-            self.page.setUrl(QtCore.QUrl(url))
-        self.page.load(self.page.url())
-        self.page.urlChanged.connect(self.urlChanged)
+            self.web.setUrl(QtCore.QUrl(url))
+        
+        self.web.urlChanged.connect(self.urlChanged)
+        self.web.load(self.web.url())
         
         self.pushBtn_close = QtGui.QPushButton()
         self.pushBtn_close.setText("Exit")
@@ -34,26 +53,26 @@ class WebPage(QtGui.QWidget):
         self.pushBtn_back = QtGui.QPushButton()
         self.pushBtn_back.setText("◀")
         self.pushBtn_back.setMaximumWidth(30)
-        self.pushBtn_back.clicked.connect(self.page.back) # Back button
+        self.pushBtn_back.clicked.connect(self.web.back) # Back button
 
         self.pushBtn_forward = QtGui.QPushButton()
         self.pushBtn_forward.setText("▶")                 # Forward button
         self.pushBtn_forward.setMaximumWidth(30)
-        self.pushBtn_forward.clicked.connect(self.page.forward)
+        self.pushBtn_forward.clicked.connect(self.web.forward)
         
         self.pushBtn_refresh = QtGui.QPushButton()
         self.pushBtn_refresh.setText("↻")
-        self.pushBtn_refresh.clicked.connect(self.page.reload) # Refresh button
+        self.pushBtn_refresh.clicked.connect(self.web.reload) # Refresh button
         self.pushBtn_refresh.setMaximumWidth(30)
 
 
         self.lineEdit_url = QtGui.QLineEdit()
-        self.lineEdit_url.setText(self.page.url().toString()) # Address bar
+        self.lineEdit_url.setText(self.web.url().toString()) # Address bar
         
         self.pushBtn_go = QtGui.QPushButton()
         self.pushBtn_go.setText("Go")
         self.pushBtn_go.setMaximumWidth(40)
-        self.pushBtn_go.clicked.connect(self.loadPage) 
+        self.pushBtn_go.clicked.connect(self.loadPage)
         self.pushBtn_go.setShortcut("Return")               # Go button
         
         self.pushBtn_zoom = QtGui.QPushButton()
@@ -72,7 +91,7 @@ class WebPage(QtGui.QWidget):
         self.vlay.setContentsMargins(0,0,0,0)
         self.vlay.setSpacing(1)
         self.vlay.addLayout(self.hlay)
-        self.vlay.addWidget(self.page)
+        self.vlay.addWidget(self.web)
         
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose) # have widget deleted on close
         self.show()
@@ -98,21 +117,22 @@ class WebPage(QtGui.QWidget):
         elif (http in url) and (www not in url): # format is http://google.com
             url = url
 
-        self.page.load(QtCore.QUrl(url))
+        self.web.load(QtCore.QUrl(url))
         return
     #def end
 
     def urlChanged(self):
-        self.lineEdit_url.setText(self.page.url().toString())
+        self.lineEdit_url.setText(self.web.url().toString())
     #def end
 
     def changeZoom(self):
-        zoom = self.page.zoomFactor()
+        zoom = self.web.zoomFactor()
         zoom -= 0.1;
 
         if zoom < 0.4:
             zoom = 1.0
 
-        self.page.setZoomFactor(zoom)
+        self.web.setZoomFactor(zoom)
         self.pushBtn_zoom.setText(str(round(zoom,1)*100)[:-2] + "%") # [:-2] changes 80.0% to 80%
     #def end
+        
