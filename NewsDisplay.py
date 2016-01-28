@@ -11,7 +11,8 @@ class NewsWidget(QtGui.QWidget):
     def __init__(self, parent):
         super(NewsWidget, self).__init__(parent)
         
-        self.rssList = list() # contatins all rss feed urls
+        self.rssList = list() # contatins all rss urls
+        self.feedList = list() # contains all rss feed objects
         
         try:
             with open('rssfeed.cfg') as urls:
@@ -20,35 +21,68 @@ class NewsWidget(QtGui.QWidget):
                     if rss[0] == '#': continue
                     self.rssList.append(rss)
         except:
-            print("Failed to open rssfeed.cfg..")
+            print("Failed to open rssfeed.cfg ...")
             return
         
-        # for e in f.entries:
-            
-        #     print(e.title.encode('utf-8'))
-        #     print(e.description.split('<br')[0].encode('utf-8'))
-        #     print(e.published)
-        #     print("")
+        self.feedList = self.getFeeds()
+        
+        #Initialize timers
+        self.updateTimer = QtCore.QTimer()
+        self.updateTimer.timeout.connect(self.updateUI)
+        self.updateTimer.start(3600000) # Update articles every hour
+        
         self.initUI()
     #end def
         
     def initUI(self):
-        vLay = QtGui.QVBoxLayout(self)
-        vLay.setSpacing(0)
+        self.vLay = QtGui.QVBoxLayout(self)
+        self.vLay.setSpacing(0)
         
-        scroll = QtGui.QScrollArea()
-        scroll.setWidgetResizable(True)
-        vLay.addWidget(scroll)
+        self.scroll = QtGui.QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.vLay.addWidget(self.scroll)
+
+        w = self.updateArticles()
+        self.scroll.setWidget(w)
+    #end def
         
+    def updateUI(self):
+        self.feedList = self.getFeeds() # get new feed objects
+        w = self.updateArticles()
+        self.scroll.setWidget(w)
+        
+    def getFeeds(self):
+        f = list()
+        for url in self.rssList:
+            f.append(feedparser.parse(url))
+        return f
+        
+    def updateArticles(self):
         w = QtGui.QWidget(self)
         vbox = QtGui.QVBoxLayout(w)
+        font = QtGui.QFont("Arial")
         
-        for x in range(0, choice(range(50,150))):
+        for x in range(0, choice(range(5,15))):
             _l = QtGui.QHBoxLayout()
-            _l.addWidget(QtGui.QLabel("Label # %d" % x, self))
-            _l.addWidget(QtGui.QCheckBox(self))
-            _l.addWidget(QtGui.QComboBox(self))
-            _l.addStretch(1)
-            vbox.addLayout(_l)
+            _d = QtGui.QHBoxLayout()
             
-        scroll.setWidget(w)
+            title = QtGui.QLabel(self.feedList[0].entries[2].title + ": ")
+            font.setPointSize(12)
+            font.setBold(True)
+            title.setFont(font)
+            
+            desc = QtGui.QLabel("    " + self.feedList[0].entries[3].description.split('<br')[0])
+            desc.setWordWrap(True)
+            font.setPointSize(10)
+            font.setBold(False)
+            desc.setFont(font)
+            
+            _l.addWidget(title)
+            _d.addWidget(desc)
+            _l.addStretch(1)
+            _d.addStretch(1)
+            
+            vbox.addLayout(_l)
+            vbox.addLayout(_d)
+            
+        return w
