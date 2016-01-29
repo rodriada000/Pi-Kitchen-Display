@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pyowm
 import feedparser
-#from time import *
+from time import *
 #from datetime import datetime
 from PyQt4 import QtCore, QtGui
 from WebBrowser import WebPage
@@ -42,6 +42,15 @@ class NewsWidget(QtGui.QWidget):
         
         self.scroll = QtGui.QScrollArea()
         self.scroll.setWidgetResizable(True)
+        
+        font = QtGui.QFont("Arial")
+        font.setItalic(True)
+        font.setPointSize(8)
+        self.updateLbl = QtGui.QLabel(self)
+        self.updateLbl.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
+        self.updateLbl.setFont(font)
+        
+        self.vLay.addWidget(self.updateLbl)
         self.vLay.addWidget(self.scroll)
 
         self.updateUI()
@@ -50,6 +59,7 @@ class NewsWidget(QtGui.QWidget):
     def updateUI(self):
         self.feedList = self.getFeeds() # get new feed objects
         w = self.updateArticles()
+        self.updateLbl.setText(strftime("Updated at %-I:%M"))
         self.scroll.setWidget(w)
         
     def getFeeds(self):
@@ -78,11 +88,14 @@ class NewsWidget(QtGui.QWidget):
                 title = ClickableQLabel(feed.entries[i].title)
                 self.connect(title, QtCore.SIGNAL('clicked()'), self.emitOpenArticle)
                 title.setWordWrap(True)
+                title.setMinimumWidth(self.parent().geometry().width()-100)
                 font.setPointSize(12)
                 font.setBold(True)
                 title.setFont(font)
                 
                 desc = QtGui.QLabel("  " + feed.entries[i].description.split('<br')[0])
+                desc.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+                desc.setMinimumWidth(self.parent().geometry().width()-100)
                 desc.setWordWrap(True)
                 font.setPointSize(10)
                 font.setBold(False)
@@ -103,3 +116,7 @@ class NewsWidget(QtGui.QWidget):
         if (not self.signalsBlocked()):
             self.articleClicked.emit(self.rssLinks[self.sender().text()])
         return
+
+    def resizeEvent(self,resizeEvent): # Resizes text to fit the width of the frame
+        w = self.updateArticles()
+        self.scroll.setWidget(w)

@@ -30,14 +30,21 @@ class WebPage(QtGui.QWidget):
         self.myNetAccessManager = MyNetworkAccessManager()
         
         self.resize(size.width(), size.height())
-        self.initUI(url)
+        self.initUI(size, url)
 
-    def initUI(self, url):
+    def initUI(self, size, url):
         
         self.vlay = QtGui.QVBoxLayout(self)
         self.hlay = QtGui.QHBoxLayout() # Layouts
+        
+        self.pbar = QtGui.QProgressBar() # progress bar in botom left corner
+        self.pbar.setMinimumWidth(size.width())
+        self.pbar.setMaximumHeight(10)
+        self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.pbar.setTextVisible(False)
+        self.pbar.move(0, size.height()+10)
 
-        self.web = QtWebKit.QWebView()
+        self.web = QtWebKit.QWebView(loadProgress = self.pbar.setValue, loadFinished = self.pbar.hide, loadStarted = self.pbar.show)
         self.web.page().setNetworkAccessManager(self.myNetAccessManager)
         
         if url is None:
