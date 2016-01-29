@@ -13,9 +13,12 @@ class MyNetworkAccessManager(QNetworkAccessManager): # inherited class that is m
         url = request.url().toString()
         doFilter = adblockFilter.match(url)
         if doFilter:
-            return QNetworkAccessManager.createRequest(self, self.GetOperation, QtNetwork.QNetworkRequest(QtCore.QUrl()))
-        else:
-            return QNetworkAccessManager.createRequest(self, op, request, device)
+            try:
+                return QNetworkAccessManager.createRequest(self, self.GetOperation, QtNetwork.QNetworkRequest(QtCore.QUrl()))
+            except:
+                print("failed to create request ...")
+                
+        return QNetworkAccessManager.createRequest(self, op, request, device)
 
 class WebPage(QtGui.QWidget):
 

@@ -56,14 +56,14 @@ class Ui_MainWindow(object):
         #weather_hlay.addStretch(0)
         weather_hlay.addWidget(WeatherWidget(self.frame_weather))
 
-        # Side frame
+        # Side frame (Rss feed widget)
         self.frame = QtGui.QFrame(self.centralwidget)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
         news_hlay = QtGui.QHBoxLayout(self.frame)
-        news_hlay.addWidget(NewsWidget(self.frame))
-        news_hlay.setContentsMargins(2, 2, 2, 2)
+        news_hlay.addWidget(NewsWidget(self.frame, MainWindow.geometry()))
+        news_hlay.setContentsMargins(1, 1, 1, 1)
 
         # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
@@ -178,6 +178,7 @@ class Ui_MainWindow(object):
     
     def btClick(self):
         # Open a webbrowser with homepage google.com
+        print(self.centralwidget.geometry())
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
 
 
