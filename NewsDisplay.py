@@ -9,7 +9,9 @@ from ExtendedQLabel import ClickableQLabel
 
 class NewsWidget(QtGui.QWidget):
 
-    def __init__(self, parent, websize):
+    articleClicked = QtCore.pyqtSignal(str)
+
+    def __init__(self, parent):
         super(NewsWidget, self).__init__(parent)
         
         self.rssList = list() # contatins all rss urls
@@ -25,10 +27,6 @@ class NewsWidget(QtGui.QWidget):
         except:
             print("Failed to open rssfeed.cfg ...")
             return
-        
-        self.feedList = self.getFeeds()
-        self.webSize = websize
-        print(websize)
         
         #Initialize timers
         self.updateTimer = QtCore.QTimer()
@@ -46,8 +44,7 @@ class NewsWidget(QtGui.QWidget):
         self.scroll.setWidgetResizable(True)
         self.vLay.addWidget(self.scroll)
 
-        w = self.updateArticles()
-        self.scroll.setWidget(w)
+        self.updateUI()
     #end def
         
     def updateUI(self):
@@ -79,7 +76,7 @@ class NewsWidget(QtGui.QWidget):
                 self.rssLinks[feed.entries[i].title] = feed.entries[i].link
                 
                 title = ClickableQLabel(feed.entries[i].title)
-                self.connect(title, QtCore.SIGNAL('clicked()'), self.openArticle)
+                self.connect(title, QtCore.SIGNAL('clicked()'), self.emitOpenArticle)
                 title.setWordWrap(True)
                 font.setPointSize(12)
                 font.setBold(True)
@@ -101,7 +98,8 @@ class NewsWidget(QtGui.QWidget):
             i += 1
         return w
 
-    def openArticle(self):
-        # Open a webbrowser to the article
-        web = WebPage(self.window(), self.window().geometry(), self.rssLinks[self.sender().text()])
+    def emitOpenArticle(self):
+        # emit a signal so Mainwindow can open browser
+        if (not self.signalsBlocked()):
+            self.articleClicked.emit(self.rssLinks[self.sender().text()])
         return

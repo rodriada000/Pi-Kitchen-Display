@@ -62,7 +62,9 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
         news_hlay = QtGui.QHBoxLayout(self.frame)
-        news_hlay.addWidget(NewsWidget(self.frame, MainWindow.geometry()))
+        self.newsWidg = NewsWidget(self.frame)
+        self.newsWidg.articleClicked.connect(self.openArticle)
+        news_hlay.addWidget(self.newsWidg)
         news_hlay.setContentsMargins(1, 1, 1, 1)
 
         # Setup Clock
@@ -178,7 +180,8 @@ class Ui_MainWindow(object):
     
     def btClick(self):
         # Open a webbrowser with homepage google.com
-        print(self.centralwidget.geometry())
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
-
+        
+    def openArticle(self, url):
+        self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), url)
 

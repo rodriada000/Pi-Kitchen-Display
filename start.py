@@ -18,6 +18,6 @@ if __name__ == "__main__":
     width, height = screen_rect.width(), screen_rect.height()
 
     myapp = StartQT4()
-    myapp.resize(width/2, height/2)
-    myapp.show()
+    myapp.resize(width, height)
+    myapp.showMaximized()
     sys.exit(app.exec_())
