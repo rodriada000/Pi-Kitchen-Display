@@ -39,10 +39,10 @@ class WebPage(QtGui.QWidget):
         
         self.pbar = QtGui.QProgressBar() # progress bar in botom left corner
         self.pbar.setMinimumWidth(size.width())
-        self.pbar.setMaximumHeight(10)
-        self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        self.pbar.setMaximumHeight(12)
+        self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
         self.pbar.setTextVisible(False)
-        self.pbar.move(0, size.height()+10)
+        self.pbar.move(self.window().geometry().x(), self.window().geometry().height()+12)
 
         self.web = QtWebKit.QWebView(loadProgress = self.pbar.setValue, loadFinished = self.pbar.hide, loadStarted = self.pbar.show)
         self.web.page().setNetworkAccessManager(self.myNetAccessManager)

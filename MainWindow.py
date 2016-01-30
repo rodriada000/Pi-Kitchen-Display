@@ -53,7 +53,6 @@ class Ui_MainWindow(object):
         self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
         weather_hlay = QtGui.QHBoxLayout(self.frame_weather)
-        #weather_hlay.addStretch(0)
         weather_hlay.addWidget(WeatherWidget(self.frame_weather))
 
         # Side frame (Rss feed widget)
