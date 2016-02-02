@@ -46,11 +46,26 @@ class NewsWidget(QtGui.QWidget):
         font = QtGui.QFont("Arial")
         font.setItalic(True)
         font.setPointSize(8)
-        self.updateLbl = QtGui.QLabel(self)
+
+        self.hbox = QtGui.QHBoxLayout(self)
+        
+        self.updateLbl = QtGui.QLabel()
         self.updateLbl.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
         self.updateLbl.setFont(font)
+
+        self.upBtn = QtGui.QPushButton()
+        self.upBtn.setText("Scroll Up")
+        self.upBtn.clicked.connect(self.scrollUp)
         
-        self.vLay.addWidget(self.updateLbl)
+        self.downBtn = QtGui.QPushButton()
+        self.downBtn.setText("Scroll Down")
+        self.downBtn.clicked.connect(self.scrollDown)
+        
+        self.hbox.addWidget(self.upBtn)
+        self.hbox.addWidget(self.downBtn)
+        self.hbox.addWidget(self.updateLbl)
+        
+        self.vLay.addLayout(self.hbox)
         self.vLay.addWidget(self.scroll)
 
         self.updateUI()
@@ -120,3 +135,19 @@ class NewsWidget(QtGui.QWidget):
     def resizeEvent(self,resizeEvent): # Resizes text to fit the width of the frame
         w = self.updateArticles()
         self.scroll.setWidget(w)
+
+    def scrollDown(self):
+        current = self.scroll.verticalScrollBar().value()
+        maxScroll = self.scroll.verticalScrollBar().maximum()
+        if (current+30) <= maxScroll:
+            self.scroll.verticalScrollBar().setValue(current+30)
+        else:
+            self.scroll.verticalScrollBar().setValue(maxScroll)
+
+    def scrollUp(self):
+        current = self.scroll.verticalScrollBar().value()
+        minScroll = self.scroll.verticalScrollBar().minimum()
+        if (current-30) >= minScroll:
+            self.scroll.verticalScrollBar().setValue(current-30)
+        else:
+            self.scroll.verticalScrollBar().setValue(minScroll)

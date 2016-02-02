@@ -37,12 +37,15 @@ class WebPage(QtGui.QWidget):
         self.vlay = QtGui.QVBoxLayout(self)
         self.hlay = QtGui.QHBoxLayout() # Layouts
         
-        self.pbar = QtGui.QProgressBar() # progress bar in botom left corner
+        self.pbar = QtGui.QProgressBar() # progress bar to go across bottom
+        self.pbar.setStyleSheet("""QProgressBar { border: 2px solid grey; border-radius: 3px; background-color: #FF0000;}
+
+ QProgressBar::chunk:horizontal {background: qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 cyan, stop: 1 white);}""")
         self.pbar.setMinimumWidth(size.width())
         self.pbar.setMaximumHeight(12)
         self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
         self.pbar.setTextVisible(False)
-        self.pbar.move(self.window().geometry().x(), self.window().geometry().height()+12)
+        self.pbar.move(0, size.height()-12)
 
         self.web = QtWebKit.QWebView(loadProgress = self.pbar.setValue, loadFinished = self.pbar.hide, loadStarted = self.pbar.show)
         self.web.page().setNetworkAccessManager(self.myNetAccessManager)
