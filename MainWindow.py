@@ -104,20 +104,6 @@ class Ui_MainWindow(object):
         dish_hlay.setContentsMargins(2, 4, 2, 4)
 
         # Calendar Widget
-        self.calendarWidget_main = QtGui.QCalendarWidget(self.centralwidget)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.calendarWidget_main.sizePolicy().hasHeightForWidth())
-        self.calendarWidget_main.setSizePolicy(sizePolicy)
-        font = QtGui.QFont()
-        font.setFamily(_fromUtf8("FreeSans"))
-        self.calendarWidget_main.setFont(font)
-        self.calendarWidget_main.setFirstDayOfWeek(QtCore.Qt.Monday)
-        self.calendarWidget_main.setVerticalHeaderFormat(QtGui.QCalendarWidget.NoVerticalHeader)
-        self.calendarWidget_main.setNavigationBarVisible(False)
-        self.calendarWidget_main.setDateEditEnabled(False)
-        self.calendarWidget_main.setObjectName(_fromUtf8("calendarWidget_main"))
 
         # WebBrowser button
         self.pushButton_web = QtGui.QPushButton(self.centralwidget)
@@ -143,12 +129,11 @@ class Ui_MainWindow(object):
 
         # Add widgets to grid layout
         self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
-        self.gridLayout.addWidget(self.frame, 0, 3, 1, 2)
-        self.gridLayout.addWidget(self.label_clock, 1, 3, 1, 2)
+        self.gridLayout.addWidget(self.frame, 0, 3, 3, 2)
+        self.gridLayout.addWidget(self.label_clock, 3, 3, 1, 2)
         self.gridLayout.addWidget(self.pushButton_web, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 2, 1, 2, 2)
-        self.gridLayout.addWidget(self.calendarWidget_main, 2, 3, 2, 2)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)

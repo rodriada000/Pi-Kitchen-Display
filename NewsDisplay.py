@@ -107,8 +107,12 @@ class NewsWidget(QtGui.QWidget):
                 font.setPointSize(12)
                 font.setBold(True)
                 title.setFont(font)
-                
-                desc = QtGui.QLabel("  " + feed.entries[i].description.split('<br')[0])
+                description = feed.entries[i].description.split(' ')
+                if len(description) > 35:
+                    description = ' '.join(description[:35])
+                else:
+                    description = ' '.join(description)
+                desc = QtGui.QLabel("  " + description)
                 desc.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
                 desc.setMinimumWidth(self.parent().geometry().width()-100)
                 desc.setWordWrap(True)
