@@ -212,7 +212,6 @@ class WeatherWidget(QtGui.QWidget):
         maxDateSize = 18 # max font for displaying the dates
         maxSize = 14 # max font for displaying temperatures & details
         i = 0
-        
         while i < 5:
             # Resize dates
             widg = self.grid.itemAtPosition(0, i).widget()

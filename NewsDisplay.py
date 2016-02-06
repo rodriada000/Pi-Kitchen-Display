@@ -7,6 +7,9 @@ from PyQt4 import QtCore, QtGui
 from WebBrowser import WebPage
 from ExtendedQLabel import ClickableQLabel
 
+MAXLEN = 35
+MAXSCROLL = 50
+
 class NewsWidget(QtGui.QWidget):
 
     articleClicked = QtCore.pyqtSignal(str)
@@ -42,6 +45,8 @@ class NewsWidget(QtGui.QWidget):
         
         self.scroll = QtGui.QScrollArea()
         self.scroll.setWidgetResizable(True)
+
+        self.scroll.verticalScrollBar().setStyleSheet("""QScrollBar:vertical { width: 35px; }""")
         
         font = QtGui.QFont("Arial")
         font.setItalic(True)
@@ -107,11 +112,8 @@ class NewsWidget(QtGui.QWidget):
                 font.setPointSize(12)
                 font.setBold(True)
                 title.setFont(font)
-                description = feed.entries[i].description.split(' ')
-                if len(description) > 35:
-                    description = ' '.join(description[:35])
-                else:
-                    description = ' '.join(description)
+                
+                description = self.getDescription(feed.entries[i].summary) # shorten the description if longer than desired
                 desc = QtGui.QLabel("  " + description)
                 desc.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
                 desc.setMinimumWidth(self.parent().geometry().width()-100)
@@ -130,6 +132,15 @@ class NewsWidget(QtGui.QWidget):
             i += 1
         return w
 
+    def getDescription(self, desc_str):
+        desc_str = desc_str.split('<br')[0] # remove any extra html (happens on CNN rss feeds) 
+        descL = desc_str.split(' ') # get list of words
+
+        if len(descL) > MAXLEN:
+            return ' '.join(descL[:MAXLEN]) + '...'
+        else:
+            return desc_str
+
     def emitOpenArticle(self):
         # emit a signal so Mainwindow can open browser
         if (not self.signalsBlocked()):
@@ -142,16 +153,16 @@ class NewsWidget(QtGui.QWidget):
 
     def scrollDown(self):
         current = self.scroll.verticalScrollBar().value()
-        maxScroll = self.scroll.verticalScrollBar().maximum()
-        if (current+30) <= maxScroll:
-            self.scroll.verticalScrollBar().setValue(current+30)
+        maxValue = self.scroll.verticalScrollBar().maximum()
+        if (current+MAXSCROLL) <= maxValue:
+            self.scroll.verticalScrollBar().setValue(current+MAXSCROLL)
         else:
-            self.scroll.verticalScrollBar().setValue(maxScroll)
+            self.scroll.verticalScrollBar().setValue(maxValue)
 
     def scrollUp(self):
         current = self.scroll.verticalScrollBar().value()
-        minScroll = self.scroll.verticalScrollBar().minimum()
-        if (current-30) >= minScroll:
-            self.scroll.verticalScrollBar().setValue(current-30)
+        minValue = self.scroll.verticalScrollBar().minimum()
+        if (current-MAXSCROLL) >= minValue:
+            self.scroll.verticalScrollBar().setValue(current-MAXSCROLL)
         else:
-            self.scroll.verticalScrollBar().setValue(minScroll)
+            self.scroll.verticalScrollBar().setValue(minValue)

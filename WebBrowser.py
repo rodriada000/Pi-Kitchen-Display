@@ -22,6 +22,8 @@ class MyNetworkAccessManager(QNetworkAccessManager): # inherited class that is m
 
 class WebPage(QtGui.QWidget):
 
+    resizeNeeded = QtCore.pyqtSignal()
+    
     def __init__(self, parent, size, url):
         """
             Initialize the browser GUI and connect the events
@@ -30,6 +32,7 @@ class WebPage(QtGui.QWidget):
         self.myNetAccessManager = MyNetworkAccessManager()
         
         self.resize(size.width(), size.height())
+        #self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.initUI(size, url)
 
     def initUI(self, size, url):
@@ -38,9 +41,6 @@ class WebPage(QtGui.QWidget):
         self.hlay = QtGui.QHBoxLayout() # Layouts
         
         self.pbar = QtGui.QProgressBar() # progress bar to go across bottom
-        self.pbar.setStyleSheet("""QProgressBar { border: 2px solid grey; border-radius: 3px; background-color: #FF0000;}
-
- QProgressBar::chunk:horizontal {background: qlineargradient(x1: 0, y1: 0.5, x2: 1, y2: 0.5, stop: 0 cyan, stop: 1 white);}""")
         self.pbar.setMinimumWidth(size.width())
         self.pbar.setMaximumHeight(12)
         self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
@@ -48,7 +48,7 @@ class WebPage(QtGui.QWidget):
         self.pbar.move(0, size.height()-12)
 
         self.web = QtWebKit.QWebView(loadProgress = self.pbar.setValue, loadFinished = self.pbar.hide, loadStarted = self.pbar.show)
-        self.web.page().setNetworkAccessManager(self.myNetAccessManager)
+        self.web.page().setNetworkAccessManager(self.myNetAccessManager) # set custom network access manager to ignore most ad requests
         
         if url is None:
             self.web.setUrl(QtCore.QUrl("http://www.google.com")) # homepage is google

@@ -62,15 +62,14 @@ class Ui_MainWindow(object):
         self.frame.setObjectName(_fromUtf8("frame"))
         news_hlay = QtGui.QHBoxLayout(self.frame)
         self.newsWidg = NewsWidget(self.frame)
-        self.newsWidg.articleClicked.connect(self.openArticle)
+        self.newsWidg.articleClicked.connect(self.openArticle) # connect signal from NewsWidget to open article in MainWindow
         news_hlay.addWidget(self.newsWidg)
         news_hlay.setContentsMargins(1, 1, 1, 1)
 
         # Setup Clock
         self.label_clock = QtGui.QLabel(self.centralwidget)
-        self.label_clock.setMinimumSize(QtCore.QSize(111, 41))
+        self.label_clock.setMinimumSize(QtCore.QSize(125, 41))
         font = QtGui.QFont()
-        font.setFamily(_fromUtf8("Droid Sans [monotype]"))
         font.setPointSize(28)
         font.setBold(False)
         font.setUnderline(False)
@@ -86,13 +85,14 @@ class Ui_MainWindow(object):
         self.label_clock.setAutoFillBackground(False)
         self.label_clock.setTextFormat(QtCore.Qt.AutoText)
         self.label_clock.setScaledContents(False)
-        self.label_clock.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
+        self.label_clock.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
         self.label_clock.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.label_clock.setObjectName(_fromUtf8("label_clock"))
         self.clockTimer = QtCore.QTimer()
         self.clockTimer.timeout.connect(self.updateClock)
         self.clockTimer.start(1000)
-
+        self.label_clock.setStyleSheet("""QLabel { font-family: OSP-DIN; }""")
+        self.updateClock()
         
         # Bottom frame
         self.frame_2 = QtGui.QFrame(self.centralwidget)
@@ -103,12 +103,11 @@ class Ui_MainWindow(object):
         dish_hlay.addWidget(DishWasherWidget(self.frame_2))
         dish_hlay.setContentsMargins(2, 4, 2, 4)
 
-        # Calendar Widget
-
         # WebBrowser button
         self.pushButton_web = QtGui.QPushButton(self.centralwidget)
         self.pushButton_web.setObjectName(_fromUtf8("pushButton_web"))
         self.pushButton_web.clicked.connect(self.btClick)
+        self.web = None
         
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
@@ -141,7 +140,6 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
-        self.label_clock.setText(_translate("MainWindow", strftime("%-I:%M:%S"), None))
         self.pushButton_web.setText(_translate("MainWindow", "Web Browser", None))
         self.pushButton_mp.setText(_translate("MainWindow", "Music Player", None))
     #def end
@@ -159,7 +157,7 @@ class Ui_MainWindow(object):
     #def end
 
     def updateClock(self):
-        self.label_clock.setText(strftime("%-I:%M:%S"))
+        self.label_clock.setText("<span style='font-size:12pt;'>" + strftime("%B %-d, %Y") + " </span><span style='font-size:28pt;'>" + strftime("%-I:%M:%S") + "</span>")
     #def end
     
     def btClick(self):
@@ -168,4 +166,3 @@ class Ui_MainWindow(object):
         
     def openArticle(self, url):
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), url)
-
