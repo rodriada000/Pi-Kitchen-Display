@@ -1,5 +1,5 @@
 # Lines beginning with '#' will be ignored
-# Place your openweathermap API key on the first line and location on the second line
+# Place your wunderground API key on the first line and location on the second line
 #
 YOUR API KEY
-YOUR LOCATION (format should be "City, State" or "City, Country" without quotes)
+YOUR LOCATION (format should be "City State" or "City Country" without quotes)

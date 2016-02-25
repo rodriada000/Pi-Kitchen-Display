@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import pyowm
+import requests
+import json
 from time import *
-from datetime import datetime
 from PyQt4 import QtCore, QtGui
 
-wIcons = {800:'sunny.png', 801:'partcloudy.png', 802:'cloudy.png', 803:'clouds.png', 804:'clouds.png', 701:'mist.png',
-          500:'drizzle.png', 301:'drizzle.png', 501:'drizzle.png', 502:'rainy.png', 503:'rainy.png', 504:'rainy.png',
-          600:'snowfall.png', 601:'snowfall.png', 602:'snowfall.png', 741:'morningfog.png',
-          200:'lightning.png', 201:'lightning.png', 202:'lightning.png', 211:'lightning.png', 212:'lightning.png'}
+wIcons = {'Clear':'sunny.png', 'Partly Cloudy':'partcloudy.png', 'Mostly Cloudy':'cloudy.png', 'Scattered Clouds':'clouds.png', 'Mist':'mist.png',
+          'Light Drizzel':'drizzle.png', 'Drizzle':'drizzle.png', 'Heavy Drizzle':'drizzle.png', 'Light Rain':'rainy.png', 'Rain':'rainy.png', 'Heavy Rain':'rainy.png',
+          'Light Snow':'snowfall.png', 'Snow':'snowfall.png', 'Heavy Snow':'snowfall.png', 'Snow Showers':'snowfall.png', 'Fog':'morningfog.png',
+          'Light Thunderstorm':'lightning.png', 'Thunderstorm':'lightning.png', 'Heavy Thunderstorm':'lightning.png'}
 
 class WeatherWidget(QtGui.QWidget):
 
@@ -21,32 +21,19 @@ class WeatherWidget(QtGui.QWidget):
 
         # Load API key and location from weather.cfg file
         self.API_key = None
-        self.userLocation = ''
+        self.userCity = ''
+        self.userState = ''
         try:
             with open('weather.cfg') as settings:
                 lines = [line.rstrip('\n') for line in settings]
                 i = 0
                 while (lines[i][0] == '#'): i += 1
                 self.API_key = lines[i] # API Key should be first line in weather.cfg
-                self.userLocation = lines[i+1] # Location should be second line
+                location = lines[i+1]  # Location should be second line
+                self.userCity = location.split(' ')[0]
+                self.userState = location.split(' ')[1]
         except:
             print("Failed to open weather.cfg..")
-            return
-
-        # Get OWM object based off given API key
-        try:
-            self.owm = pyowm.OWM(self.API_key)
-        except:
-            print("Failed to get owm object with given API key: " + self.API_key)
-            return
-
-        # Get observation object based off given location
-        try:
-            self.observation = self.owm.weather_at_place(self.userLocation)
-            if (self.observation is None):
-                raise Exception()
-        except:
-            print("Failed to get weather at given location: " + self.userLocation)
             return
 
         #Initialize timers
@@ -122,23 +109,28 @@ class WeatherWidget(QtGui.QWidget):
         self.show() # SHOW YOURSELF
     #def end
 
-    def getIcon(self, code): # Fetch correct weather icon based on weather code (http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes)
+    def getIcon(self, code): # Fetch correct weather icon based on weather code
         if code in wIcons.keys():
             return "weathericons/" + wIcons[code]
         else:
-            print("MISSING WEATHER CODE IS: " + str(code))
+            print("MISSING WEATHER CODE IS: " + code)
             return "weathericons/na.png" # no image available for given weather code
     #def end
 
     def updateWeather(self): # Update the current weather
-        self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
-        w = self.observation.get_weather()
+        try:
+            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/hourly/q/" + self.userState + "/" + self.userCity + ".json") # get json request
+            data = r.json()
+            weather = data['hourly_forecast'][0]
+        except Exception as e:
+            print("Failed to get current weather ... " + str(e))
+            return
 
         pic = self.grid.itemAtPosition(1,0).widget()
         temp = self.grid.itemAtPosition(2,0).widget()
         det = self.grid.itemAtPosition(3,0).widget()
 
-        self.origIcons[0] = QtGui.QPixmap(self.getIcon(w.get_weather_code())) # Update icon
+        self.origIcons[0] = QtGui.QPixmap(self.getIcon(weather['condition'])) # Update icon
         rect = self.grid.cellRect(1, 0) # get bounds of grid cell
         if rect.width() < rect.height(): # use mininum of width or height for icon size
             picSize = rect.width()
@@ -147,25 +139,29 @@ class WeatherWidget(QtGui.QWidget):
         scaledPix = self.origIcons[0].scaled(picSize, picSize)
         pic.setPixmap(scaledPix) #icon
 
-        temp.setText(str(w.get_temperature('fahrenheit')['temp']) + '°')
-        det.setText(w.get_detailed_status().replace(' ', '\n'))
+        temp.setText("Real Temp: " + weather['temp']['english'] + '°\nFeels Like: ' + weather['feelslike']['english'] + '°')
+        det.setText(weather['condition'].replace(' ', '\n'))
     #def end
 
     def updateForecast(self): # Update the forecast (next 4 days of weather)
-        self.observation = self.owm.weather_at_place(self.userLocation) # update observation object
-        forecast = self.owm.daily_forecast_at_id(self.observation.get_location().get_ID(), 5)
-        f = forecast.get_forecast()
-        wlist = f.get_weathers()
-
+        try:
+            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/forecast10day/q/" + self.userState + "/" + self.userCity + ".json") # get json request
+            data = r.json()
+            forecast = data['forecast']['simpleforecast']['forecastday']
+        except Exception as e:
+            print("Failed to get forecast ... " + str(e))
+            return
+                         
         i = 1
-        for weather in wlist[1:]:
-            t = weather.get_reference_time('iso').split(' ')[0] # Get date in format YYYY-MM-DD
-            w = weather.get_temperature('fahrenheit')
+        for day in forecast[1:]:
+            t = day['date']['weekday']
+            highTemp = day['high']['fahrenheit']
+            lowTemp = day['low']['fahrenheit']
 
             date = self.grid.itemAtPosition(0,i).widget()
-            date.setText(datetime.strptime(t, '%Y-%m-%d').strftime('%a')) # date converted to day of week
+            date.setText(t) # Update day of week
 
-            self.origIcons[i] = QtGui.QPixmap(self.getIcon(weather.get_weather_code())) # Update icon
+            self.origIcons[i] = QtGui.QPixmap(self.getIcon(day['conditions'])) # Update icon
             rect = self.grid.cellRect(1, i) # get bounds of grid cell
             if rect.width() < rect.height(): # use mininum of width or height for icon size
                 picSize = rect.width()
@@ -178,12 +174,14 @@ class WeatherWidget(QtGui.QWidget):
 
             # Update temperature label with new temp
             temp = self.grid.itemAtPosition(2,i).widget()
-            temp.setText('High: ' + str(w['max']) + '°\nLow: ' + str(w['min']) + '°')
+            temp.setText('H: ' + highTemp + '°\nL: ' + lowTemp + '°')
 
             det = self.grid.itemAtPosition(3,i).widget()
-            det.setText(weather.get_detailed_status().replace(' ', '\n')) # details
+            det.setText(day['conditions'].replace(' ', '\n')) # conditions
 
             i = i + 1
+            if i > 4:
+                break
     #def end
             
     def bestFontSize(self, text, cellRect):

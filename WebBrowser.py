@@ -32,7 +32,6 @@ class WebPage(QtGui.QWidget):
         self.myNetAccessManager = MyNetworkAccessManager()
         
         self.resize(size.width(), size.height())
-        #self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.initUI(size, url)
 
     def initUI(self, size, url):
@@ -60,38 +59,45 @@ class WebPage(QtGui.QWidget):
         
         self.pushBtn_close = QtGui.QPushButton()
         self.pushBtn_close.setText("Exit")
-        self.pushBtn_close.setMaximumWidth(35)
+        self.pushBtn_close.setMaximumWidth(50)
+        self.pushBtn_close.setMinimumHeight(45)
         self.pushBtn_close.clicked.connect(self.closeWeb) # Close button
 
         self.pushBtn_back = QtGui.QPushButton()
         self.pushBtn_back.setText("◀")
-        self.pushBtn_back.setMaximumWidth(30)
+        self.pushBtn_back.setMaximumWidth(50)
+        self.pushBtn_back.setMinimumHeight(45)
         self.pushBtn_back.clicked.connect(self.web.back) # Back button
 
         self.pushBtn_forward = QtGui.QPushButton()
         self.pushBtn_forward.setText("▶")                 # Forward button
-        self.pushBtn_forward.setMaximumWidth(30)
+        self.pushBtn_forward.setMaximumWidth(50)
+        self.pushBtn_forward.setMinimumHeight(45)
         self.pushBtn_forward.clicked.connect(self.web.forward)
         
         self.pushBtn_refresh = QtGui.QPushButton()
         self.pushBtn_refresh.setText("↻")
         self.pushBtn_refresh.clicked.connect(self.web.reload) # Refresh button
-        self.pushBtn_refresh.setMaximumWidth(30)
+        self.pushBtn_refresh.setMaximumWidth(50)
+        self.pushBtn_refresh.setMinimumHeight(45)
 
 
         self.lineEdit_url = QtGui.QLineEdit()
+        self.lineEdit_url.setMinimumHeight(45)
         self.lineEdit_url.setText(self.web.url().toString()) # Address bar
         
         self.pushBtn_go = QtGui.QPushButton()
         self.pushBtn_go.setText("Go")
-        self.pushBtn_go.setMaximumWidth(40)
+        self.pushBtn_go.setMaximumWidth(50)
+        self.pushBtn_go.setMinimumHeight(45)
         self.pushBtn_go.clicked.connect(self.loadPage)
         self.pushBtn_go.setShortcut("Return")               # Go button
         
         self.pushBtn_zoom = QtGui.QPushButton()
         self.pushBtn_zoom.setText("100%")
-        self.pushBtn_zoom.setMaximumWidth(40)
+        self.pushBtn_zoom.setMaximumWidth(50)
         self.pushBtn_zoom.clicked.connect(self.changeZoom)
+        self.pushBtn_zoom.setMinimumHeight(45)
 
         self.hlay.addWidget(self.pushBtn_close)
         self.hlay.addWidget(self.pushBtn_back)

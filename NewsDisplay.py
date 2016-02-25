@@ -2,13 +2,12 @@
 import pyowm
 import feedparser
 from time import *
-#from datetime import datetime
 from PyQt4 import QtCore, QtGui
 from WebBrowser import WebPage
 from ExtendedQLabel import ClickableQLabel
 
-MAXLEN = 35
-MAXSCROLL = 50
+MAXLEN = 45
+MAXSCROLL = 100
 
 class NewsWidget(QtGui.QWidget):
 
@@ -56,13 +55,16 @@ class NewsWidget(QtGui.QWidget):
         
         self.updateLbl = QtGui.QLabel()
         self.updateLbl.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignBottom)
+        self.updateLbl.setMaximumWidth(100)
         self.updateLbl.setFont(font)
 
         self.upBtn = QtGui.QPushButton()
+        self.upBtn.setMinimumHeight(40)
         self.upBtn.setText("Scroll Up")
         self.upBtn.clicked.connect(self.scrollUp)
         
         self.downBtn = QtGui.QPushButton()
+        self.downBtn.setMinimumHeight(40)
         self.downBtn.setText("Scroll Down")
         self.downBtn.clicked.connect(self.scrollDown)
         

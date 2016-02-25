@@ -27,7 +27,7 @@ class DishWasherWidget(QtGui.QWidget):
         self.statusLabel.setFont(font)
         
         self.updateBtn.setText("Update")
-        self.updateBtn.setMinimumHeight(30)
+        self.updateBtn.setMinimumHeight(50)
         font.setPointSize(12)
         font.setBold(False)
         self.updateBtn.setFont(font)

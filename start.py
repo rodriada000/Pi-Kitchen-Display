@@ -19,5 +19,14 @@ if __name__ == "__main__":
 
     myapp = StartQT4()
     myapp.resize(width, height)
+
+    # create gradient
+    p = QtGui.QPalette()
+    gradient = QtGui.QLinearGradient(0, 0, 0, height)
+    gradient.setColorAt(0.0, QtGui.QColor(250, 250, 250))
+    gradient.setColorAt(1.0, QtGui.QColor(180, 180, 180))
+    p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
+    myapp.setPalette(p)
+    
     myapp.showMaximized()
     sys.exit(app.exec_())

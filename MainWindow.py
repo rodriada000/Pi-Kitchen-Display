@@ -105,13 +105,14 @@ class Ui_MainWindow(object):
 
         # WebBrowser button
         self.pushButton_web = QtGui.QPushButton(self.centralwidget)
+        self.pushButton_web.setMinimumSize(QtCore.QSize(100, 50))
         self.pushButton_web.setObjectName(_fromUtf8("pushButton_web"))
         self.pushButton_web.clicked.connect(self.btClick)
         self.web = None
         
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
-        self.pushButton_mp.setMinimumSize(QtCore.QSize(100, 51))
+        self.pushButton_mp.setMinimumSize(QtCore.QSize(100, 50))
         self.pushButton_mp.setObjectName(_fromUtf8("pushButton_mp"))
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -133,6 +134,11 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.pushButton_web, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
         self.gridLayout.addWidget(self.frame_2, 2, 1, 2, 2)
+
+        # seperate gradient for news widget
+        p = QtGui.QPalette()
+        p.setColor(QtGui.QPalette.Background, QtCore.Qt.white)
+        self.newsWidg.setPalette(p)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.retranslateUi(MainWindow)
