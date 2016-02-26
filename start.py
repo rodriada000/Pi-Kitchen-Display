@@ -23,8 +23,9 @@ if __name__ == "__main__":
     # create gradient
     p = QtGui.QPalette()
     gradient = QtGui.QLinearGradient(0, 0, 0, height)
+    gradient.setColorAt(1.0, QtGui.QColor(110, 152, 236))
+    gradient.setColorAt(0.5, QtGui.QColor(191, 210, 250))
     gradient.setColorAt(0.0, QtGui.QColor(250, 250, 250))
-    gradient.setColorAt(1.0, QtGui.QColor(180, 180, 180))
     p.setBrush(QtGui.QPalette.Window, QtGui.QBrush(gradient))
     myapp.setPalette(p)
     

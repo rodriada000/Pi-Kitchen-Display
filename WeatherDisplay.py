@@ -5,7 +5,7 @@ from time import *
 from PyQt4 import QtCore, QtGui
 
 wIcons = {'Clear':'sunny.png', 'Partly Cloudy':'partcloudy.png', 'Mostly Cloudy':'cloudy.png', 'Scattered Clouds':'clouds.png', 'Mist':'mist.png',
-          'Light Drizzel':'drizzle.png', 'Drizzle':'drizzle.png', 'Heavy Drizzle':'drizzle.png', 'Light Rain':'rainy.png', 'Rain':'rainy.png', 'Heavy Rain':'rainy.png',
+          'Light Drizzel':'drizzle.png', 'Drizzle':'drizzle.png', 'Heavy Drizzle':'drizzle.png', 'Chance of Rain':'rainy.png', 'Light Rain':'rainy.png', 'Rain':'rainy.png', 'Heavy Rain':'rainy.png',
           'Light Snow':'snowfall.png', 'Snow':'snowfall.png', 'Heavy Snow':'snowfall.png', 'Snow Showers':'snowfall.png', 'Fog':'morningfog.png',
           'Light Thunderstorm':'lightning.png', 'Thunderstorm':'lightning.png', 'Heavy Thunderstorm':'lightning.png'}
 
@@ -139,7 +139,7 @@ class WeatherWidget(QtGui.QWidget):
         scaledPix = self.origIcons[0].scaled(picSize, picSize)
         pic.setPixmap(scaledPix) #icon
 
-        temp.setText("Real Temp: " + weather['temp']['english'] + '°\nFeels Like: ' + weather['feelslike']['english'] + '°')
+        temp.setText("Temp: " + weather['temp']['english'] + '°\nFeels: ' + weather['feelslike']['english'] + '°')
         det.setText(weather['condition'].replace(' ', '\n'))
     #def end
 
@@ -154,7 +154,7 @@ class WeatherWidget(QtGui.QWidget):
                          
         i = 1
         for day in forecast[1:]:
-            t = day['date']['weekday']
+            t = day['date']['weekday_short']
             highTemp = day['high']['fahrenheit']
             lowTemp = day['low']['fahrenheit']
 
