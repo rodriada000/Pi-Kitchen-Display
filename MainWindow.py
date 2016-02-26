@@ -35,7 +35,6 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.setWindowModality(QtCore.Qt.NonModal)
-        MainWindow.resize(625, 391)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -49,6 +48,8 @@ class Ui_MainWindow(object):
 
         # Weather Display Widget
         self.frame_weather = QtGui.QFrame(self.centralwidget)
+        self.frame_weather.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.frame_weather.setMaximumWidth(MainWindow.width())
         self.frame_weather.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
@@ -57,6 +58,7 @@ class Ui_MainWindow(object):
 
         # Side frame (Rss feed widget)
         self.frame = QtGui.QFrame(self.centralwidget)
+        self.frame.setMaximumWidth(MainWindow.width() - 100)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
@@ -129,7 +131,9 @@ class Ui_MainWindow(object):
 
         # Add widgets to grid layout
         self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
+        #self.gridLayout.setAlignment(self.frame_weather, QtCore.Qt.AlignLeft)
         self.gridLayout.addWidget(self.frame, 0, 3, 3, 2)
+        self.gridLayout.setAlignment(self.frame, QtCore.Qt.AlignRight)
         self.gridLayout.addWidget(self.label_clock, 3, 3, 1, 2)
         self.gridLayout.addWidget(self.pushButton_web, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
