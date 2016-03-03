@@ -44,7 +44,7 @@ class WebPage(QtGui.QWidget):
         self.pbar.setMaximumHeight(12)
         self.pbar.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool)
         self.pbar.setTextVisible(False)
-        self.pbar.move(0, size.height()-12)
+        self.pbar.move(0, size.height())
 
         self.web = QtWebKit.QWebView(loadProgress = self.pbar.setValue, loadFinished = self.pbar.hide, loadStarted = self.pbar.show)
         self.web.page().setNetworkAccessManager(self.myNetAccessManager) # set custom network access manager to ignore most ad requests

@@ -49,8 +49,8 @@ class Ui_MainWindow(object):
         # Weather Display Widget
         self.frame_weather = QtGui.QFrame(self.centralwidget)
         self.frame_weather.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.frame_weather.setMinimumWidth(MainWindow.width()/2)
-        self.frame_weather.setMaximumWidth(MainWindow.width()/2 + 50)
+        #self.frame_weather.setMinimumWidth(MainWindow.width()/2)
+        #self.frame_weather.setMaximumWidth(MainWindow.width()/2 + 50)
         self.frame_weather.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
@@ -59,7 +59,7 @@ class Ui_MainWindow(object):
 
         # Side frame (Rss feed widget)
         self.frame = QtGui.QFrame(self.centralwidget)
-        self.frame.setMaximumWidth(MainWindow.width()/2 - 25)
+        self.frame.setMinimumWidth(MainWindow.width()/2)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
