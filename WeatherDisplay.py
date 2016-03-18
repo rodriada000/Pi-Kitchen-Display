@@ -7,7 +7,7 @@ from ExtendedQLabel import ClickableQLabel
 #from time import *
 from PyQt4 import QtCore, QtGui
 
-wIcons = {'Clear':'sunny.png', 'Partly Cloudy':'partcloudy.png', 'Mostly Cloudy':'cloudy.png', 'Scattered Clouds':'clouds.png', 'Mist':'mist.png',
+wIcons = {'Clear':'sunny.png', 'Partly Cloudy':'partcloudy.png', 'Overcast':'clouds.png', 'Mostly Cloudy':'cloudy.png', 'Scattered Clouds':'clouds.png', 'Mist':'mist.png',
           'Light Drizzel':'drizzle.png', 'Drizzle':'drizzle.png', 'Heavy Drizzle':'drizzle.png', 'Chance of Rain':'rainy.png', 'Light Rain':'rainy.png', 'Rain':'rainy.png', 'Heavy Rain':'rainy.png',
           'Light Snow':'snowfall.png', 'Snow':'snowfall.png', 'Heavy Snow':'snowfall.png', 'Snow Showers':'snowfall.png', 'Fog':'morningfog.png',
           'Light Thunderstorm':'lightning.png', 'Chance of Thunderstorm':'lightning.png', 'Thunderstorm':'lightning.png', 'Heavy Thunderstorm':'lightning.png'}
