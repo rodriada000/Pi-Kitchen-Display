@@ -46,20 +46,18 @@ class Ui_MainWindow(object):
         self.gridLayout = QtGui.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
 
-        # Weather Display Widget
+        # Weather Display Widget (left-side frame)
         self.frame_weather = QtGui.QFrame(self.centralwidget)
         self.frame_weather.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.frame_weather.setMinimumWidth(MainWindow.width()/2)
-        self.frame_weather.setMaximumWidth(MainWindow.width()/2 + 50)
         self.frame_weather.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_weather.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_weather.setObjectName(_fromUtf8("frame_weather"))
         weather_hlay = QtGui.QHBoxLayout(self.frame_weather)
         weather_hlay.addWidget(WeatherWidget(self.frame_weather))
 
-        # Side frame (Rss feed widget)
+        # Rss feed widget (right-side frame)
         self.frame = QtGui.QFrame(self.centralwidget)
-        self.frame.setMaximumWidth(MainWindow.width()/2 - 25)
+        self.frame.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.frame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtGui.QFrame.Raised)
         self.frame.setObjectName(_fromUtf8("frame"))
@@ -96,12 +94,13 @@ class Ui_MainWindow(object):
         self.clockTimer.start(1000)
         self.label_clock.setStyleSheet("""QLabel { font-family: OSP-DIN; }""")
         self.updateClock()
-        
-        # Bottom frame
+
+        # Dishwasher widget (Bottom frame)
         self.frame_2 = QtGui.QFrame(self.centralwidget)
         self.frame_2.setFrameShape(QtGui.QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QtGui.QFrame.Raised)
         self.frame_2.setObjectName(_fromUtf8("frame_2"))
+        #self.frame_2.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
         dish_hlay = QtGui.QHBoxLayout(self.frame_2)
         dish_hlay.addWidget(DishWasherWidget(self.frame_2))
         dish_hlay.setContentsMargins(2, 4, 2, 4)
@@ -112,7 +111,7 @@ class Ui_MainWindow(object):
         self.pushButton_web.setObjectName(_fromUtf8("pushButton_web"))
         self.pushButton_web.clicked.connect(self.btClick)
         self.web = None
-        
+
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
         self.pushButton_mp.setMinimumSize(QtCore.QSize(100, 50))
@@ -127,9 +126,7 @@ class Ui_MainWindow(object):
 
         # Add widgets to grid layout
         self.gridLayout.addWidget(self.frame_weather, 0, 0, 2, 3)
-        #self.gridLayout.setAlignment(self.frame_weather, QtCore.Qt.AlignLeft)
         self.gridLayout.addWidget(self.frame, 0, 3, 3, 2)
-        self.gridLayout.setAlignment(self.frame, QtCore.Qt.AlignRight)
         self.gridLayout.addWidget(self.label_clock, 3, 3, 1, 2)
         self.gridLayout.addWidget(self.pushButton_web, 2, 0, 1, 1)
         self.gridLayout.addWidget(self.pushButton_mp, 3, 0, 1, 1)
@@ -165,10 +162,10 @@ class Ui_MainWindow(object):
     def updateClock(self):
         self.label_clock.setText("<span style='font-size:12pt;'>" + strftime("%B %-d, %Y") + " </span><span style='font-size:28pt;'>" + strftime("%-I:%M:%S") + "</span>")
     #def end
-    
+
     def btClick(self):
         # Open a webbrowser with homepage google.com
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
-        
+
     def openArticle(self, url):
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), url)
