@@ -35,6 +35,11 @@ class NewsWidget(QtGui.QWidget):
         self.updateTimer.timeout.connect(self.updateUI)
         self.updateTimer.start(3600000) # Update articles every hour
         
+        self.scrollTimer = QtCore.QTimer()
+        self.scrollTimer.timeout.connect(self.doScroll)
+        self.scrollTimer.start(5000) # timer to scroll through articles
+        self.scrollDir = 'down'
+        
         self.initUI()
     #end def
         
@@ -104,7 +109,6 @@ class NewsWidget(QtGui.QWidget):
                 
                 _l = QtGui.QHBoxLayout()
                 _d = QtGui.QHBoxLayout()
-
                 self.rssLinks[feed.entries[i].title] = feed.entries[i].link
                 
                 title = ClickableQLabel(feed.entries[i].title)
@@ -115,7 +119,11 @@ class NewsWidget(QtGui.QWidget):
                 font.setBold(True)
                 title.setFont(font)
                 
-                description = self.getDescription(feed.entries[i].summary) # shorten the description if longer than desired
+                try:
+                    description = self.getDescription(feed.entries[i].summary) # shorten the description if longer than desired
+                except:
+                    description = ""
+                
                 desc = QtGui.QLabel("  " + description)
                 desc.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
                 desc.setMinimumWidth(self.parent().geometry().width()-100)
@@ -135,7 +143,7 @@ class NewsWidget(QtGui.QWidget):
         return w
 
     def getDescription(self, desc_str):
-        desc_str = desc_str.split('<br')[0] # remove any extra html (happens on CNN rss feeds) 
+        desc_str = desc_str.split('<br')[0] # remove any extra html (happens on CNN rss feeds)
         descL = desc_str.split(' ') # get list of words
 
         if len(descL) > MAXLEN:
@@ -159,6 +167,7 @@ class NewsWidget(QtGui.QWidget):
         if (current+MAXSCROLL) <= maxValue:
             self.scroll.verticalScrollBar().setValue(current+MAXSCROLL)
         else:
+            self.scrollDir = 'up' # reached bottom of list, scroll up now
             self.scroll.verticalScrollBar().setValue(maxValue)
 
     def scrollUp(self):
@@ -167,4 +176,11 @@ class NewsWidget(QtGui.QWidget):
         if (current-MAXSCROLL) >= minValue:
             self.scroll.verticalScrollBar().setValue(current-MAXSCROLL)
         else:
+            self.scrollDir = 'down' # reached bottom of list, scroll up now
             self.scroll.verticalScrollBar().setValue(minValue)
+            
+    def doScroll(self):
+        if self.scrollDir == 'down':
+            self.scrollDown()
+        else:
+            self.scrollUp()

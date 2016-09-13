@@ -23,6 +23,7 @@ class MyNetworkAccessManager(QNetworkAccessManager): # inherited class that is m
 class WebPage(QtGui.QWidget):
 
     resizeNeeded = QtCore.pyqtSignal()
+    toSaveUrl = QtCore.pyqtSignal(str)
     
     def __init__(self, parent, size, url):
         """
@@ -117,6 +118,17 @@ class WebPage(QtGui.QWidget):
     #def end
 
     def closeWeb(self):
+        quit_msg = "Do you want to reopen this page for next time?"
+        reply = QtGui.QMessageBox.question(self, 'Prompt', quit_msg, QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+    
+        if reply == QtGui.QMessageBox.Yes:
+            # emit a signal so Mainwindow can save url
+            if (not self.signalsBlocked()):
+                self.toSaveUrl.emit(self.lineEdit_url.text())
+        else:
+            if (not self.signalsBlocked()):
+                self.toSaveUrl.emit(None)
+            
         self.close()
         return
     #def end

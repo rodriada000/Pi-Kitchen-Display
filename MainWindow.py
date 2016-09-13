@@ -112,6 +112,7 @@ class Ui_MainWindow(object):
         self.pushButton_web.setObjectName(_fromUtf8("pushButton_web"))
         self.pushButton_web.clicked.connect(self.btClick)
         self.web = None
+        self.urlToOpen = None
 
         # Music Player Button
         self.pushButton_mp = QtGui.QPushButton(self.centralwidget)
@@ -166,7 +167,11 @@ class Ui_MainWindow(object):
 
     def btClick(self):
         # Open a webbrowser with homepage google.com
-        self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), None)
+        self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), self.urlToOpen)
+        self.web.toSaveUrl.connect(self.saveWebUrl) # connect signal from WebBrowser to save url in MainWindow
+        
+    def saveWebUrl(self, url):
+        self.urlToOpen = url
 
     def openArticle(self, url):
         self.web = WebPage(self.centralwidget, self.centralwidget.geometry(), url)
