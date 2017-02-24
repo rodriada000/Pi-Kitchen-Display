@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
 import json
-import threading
-import pyttsx as tts
 from ExtendedQLabel import ClickableQLabel
 from PyQt4 import QtCore, QtGui
 
@@ -20,12 +18,6 @@ class WeatherWidget(QtGui.QWidget):
         super(WeatherWidget, self).__init__(parent)
 
         self.origIcons = list() # contains original version of icon to do proper scaling
-
-        self.speakEng = tts.init() # initialize text-to-speech engine
-        self.speakEng.connect('finished-utterance', self.onSpeakEnd)
-        self.speakEng.setProperty('volume', 1.0)
-        self.speakEng.setProperty('rate', 135)
-        self.speakEng.setProperty('voice', 'default')
 
         # Load API key and location from weather.cfg file
         self.API_key = None
@@ -70,7 +62,6 @@ class WeatherWidget(QtGui.QWidget):
 
         # Today Icon label
         pic = ClickableQLabel()
-        self.connect(pic, QtCore.SIGNAL('clicked()'), self.startWeatherThread)
         pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
         self.origIcons.append(QtGui.QPixmap())
 
@@ -94,7 +85,6 @@ class WeatherWidget(QtGui.QWidget):
             date.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
 
             pic = ClickableQLabel()
-            self.connect(pic, QtCore.SIGNAL('clicked()'), self.startForecastThread)
             pic.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignVCenter)
             self.origIcons.append(QtGui.QPixmap())
 
@@ -127,11 +117,15 @@ class WeatherWidget(QtGui.QWidget):
             return "weathericons/na.png" # no image available for given weather code
     #def end
 
-    def updateWeather(self): # Update the current weather
+    def updateWeather(self):
+        """
+        Retrieve current weather conditions and update UI to display new conditions.
+        """
         try:
-            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/hourly/q/" + self.userState + "/" + self.userCity + ".json") # get json request
+            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/conditions/q/" + self.userState + "/" + self.userCity + ".json") # get json request
             data = r.json()
-            weather = data['hourly_forecast'][0]
+            print(data['current_observation'])
+            weather = data['current_observation']
         except Exception as e:
             print("Failed to get current weather ... " + str(e))
             return
@@ -140,7 +134,7 @@ class WeatherWidget(QtGui.QWidget):
         temp = self.grid.itemAtPosition(2,0).widget()
         det = self.grid.itemAtPosition(3,0).widget()
 
-        self.origIcons[0] = QtGui.QPixmap(self.getIcon(weather['condition'])) # Update icon
+        self.origIcons[0] = QtGui.QPixmap(self.getIcon(weather['weather'])) # Update icon
         rect = self.grid.cellRect(1, 0) # get bounds of grid cell
         if rect.width() < rect.height(): # use mininum of width or height for icon size
             picSize = rect.width()
@@ -149,76 +143,14 @@ class WeatherWidget(QtGui.QWidget):
         scaledPix = self.origIcons[0].scaled(picSize, picSize)
         pic.setPixmap(scaledPix) #icon
 
-        temp.setText("Temp: " + weather['temp']['english'] + '°\nFeels: ' + weather['feelslike']['english'] + '°')
-        det.setText(weather['condition'].replace(' ', '\n'))
+        temp.setText("Temp: {}° \nFeels: {}°".format(weather['temp_f'], weather['feelslike_f']))
+        det.setText(weather['weather'].replace(' ', '\n'))
     #def end
 
-    # starts a thread that will text-to-speech the current conditions
-    def startWeatherThread(self):
-        for thread in threading.enumerate(): # verify that a thread isn't already running
-            if thread.name == '_speakThread':
-                print('speaking already ...')
-                return
-        t = threading.Thread(target=self.tellWeather)
-        t.name = '_speakThread'
-        t.start()
-
-    # starts a thread that will text-to-speech the forecast for the selected day
-    def startForecastThread(self):
-        for thread in threading.enumerate(): # verify that a thread isn't already running
-            if thread.name == '_speakThread':
-                print('speaking already ...')
-                return
-
-        i = 1 # determine which forecast day was pressed
-        while i < 5:
-            pic = self.grid.itemAtPosition(1, i).widget()
-            if pic == self.sender():
-                break
-            i += 1
-        t = threading.Thread(target=self.tellForecast, args=(i, ))
-        t.name = '_speakThread'
-        t.start()
-
-    def tellForecast(self, index):
-        try:
-            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/forecast10day/q/" + self.userState + "/" + self.userCity + ".json") # get json request
-            data = r.json()
-            forecast = data['forecast']['simpleforecast']['forecastday'][index]
-        except Exception as e:
-            print("Failed to get forecast ... " + str(e))
-            return
-
-        msg = forecast['date']['weekday'] + " conditions are " + forecast['conditions']
-        msg = msg + "... The high will be " + forecast['high']['fahrenheit']
-        msg = msg + " degrees. Wind speeds will be " + str(forecast['maxwind']['mph'])
-        msg = msg + " miles per hour."
-
-        self.speakEng.say(msg)
-        self.speakEng.startLoop()
-        self.speakEng.startLoop() # a hack
-
-    def tellWeather(self):
-        try:
-            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/conditions/q/" + self.userState + "/" + self.userCity + ".json") # get json request
-            conditions = r.json()['current_observation']
-            r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/forecast/q/" + self.userState + "/" + self.userCity + ".json") # get json request
-            data = r.json()
-            forecast = data['forecast']['simpleforecast']['forecastday'][0]
-        except Exception as e:
-            print("Failed to get current conditions ... " + str(e))
-            return
-
-        msg = "It is currently " + str(conditions['temp_f']) + " degrees, "
-        msg = msg + conditions['weather'] + ". Wind speed is "
-        msg = msg + str(conditions['wind_mph']) + ' miles per hour.'
-        msg = msg + " The high today is " + forecast['high']['fahrenheit'] + " degrees."
-
-        self.speakEng.say(msg)
-        self.speakEng.startLoop()
-        self.speakEng.startLoop() # a hack
-
-    def updateForecast(self): # Update the forecast (next 4 days of weather)
+    def updateForecast(self):
+        """
+        Update the forecast (next 4 days of weather).
+        """
         try:
             r = requests.get("http://api.wunderground.com/api/" + self.API_key + "/forecast10day/q/" + self.userState + "/" + self.userCity + ".json") # get json request
             data = r.json()
@@ -254,12 +186,15 @@ class WeatherWidget(QtGui.QWidget):
             det = self.grid.itemAtPosition(3,i).widget()
             det.setText(day['conditions'].replace(' ', '\n')) # conditions
 
-            i = i + 1
+            i += 1
             if i > 4:
                 break
     #def end
 
     def bestFontSize(self, text, cellRect):
+        """
+        Determine best font size based on cellRect of a widget.
+        """
         size = 2 # minimum font size of 2
         ff = QtGui.QFont()
         ff.setPointSize(size)
@@ -283,10 +218,10 @@ class WeatherWidget(QtGui.QWidget):
         return size - 1 # reduce font size by 1 to fit within cellRect
     #def end
 
-    def onSpeakEnd(self, name, completed):
-        self.speakEng.endLoop()
-
-    def resizeEvent(self,resizeEvent): # Resizes text to fit inside each grid cell
+    def resizeEvent(self,resizeEvent):
+        """
+        Resizes text to fit inside each grid cell.
+        """
         font = QtGui.QFont("Arial")
         maxDateSize = 18 # max font for displaying the dates
         maxSize = 14 # max font for displaying temperatures & details
